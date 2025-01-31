@@ -7,6 +7,8 @@ LABEL org.opencontainers.image.source=https://github.com/yashanand1910/dotfiles
 ARG USER=yashanand
 ARG UID=1000
 
+ARG GO_VERSION=1.23.5
+
 # Install packages
 RUN <<EOT
 set -eux
@@ -128,11 +130,11 @@ EOT
 # Setup go
 RUN <<EOT
 set -eux
-wget https://go.dev/dl/go1.23.5.linux-amd64.tar.gz
+wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xzf go1.23.5.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
 sudo ln -s /usr/local/go/bin/go /usr/local/bin/go
-rm go1.23.5.linux-amd64.tar.gz
+rm go${GO_VERSION}.linux-amd64.tar.gz
 EOT
 
 # Setup miscelaneous
