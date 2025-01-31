@@ -96,7 +96,7 @@ curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvi
 sudo rm -rf /opt/nvim
 sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
 sudo ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-rm nvim-linux64.tar.gz
+rm nvim-linux-x86_64.tar.gz
 EOT
 
 # Setup NVIDIA container toolkit
