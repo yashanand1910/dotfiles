@@ -32,3 +32,5 @@ filesystem
 stdout
 stderr
 systemd
+checkpointed
+gRPC
