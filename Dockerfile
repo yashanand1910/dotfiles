@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.4.1-devel-ubuntu24.04
 
 LABEL org.opencontainers.image.source=https://github.com/yashanand1910/dotfiles
 
