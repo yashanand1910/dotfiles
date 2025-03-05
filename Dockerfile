@@ -56,9 +56,10 @@ EOT
 # Setup user
 RUN <<EOT
 set -eux
-cat /etc/group
-groupadd -g ${UID} ${USER}
-useradd -rm -d /home/${USER} -s /bin/zsh -u ${UID} -g ${USER} -G sudo ${USER}
+usermod -l ${USER} ubuntu
+groupmod -n ${USER} ubuntu
+usermod -d /home/${USER} -m ${USER}
+usermod -c "${USER}" -g ${USER} -G sudo -s /bin/zsh ${USER}
 echo "${USER} ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}
 EOT
 USER ${USER}
