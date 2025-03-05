@@ -28,7 +28,6 @@ apt-get install -y locales
 apt-get install -y man-db
 apt-get install -y zip unzip tar
 apt-get install -y gdb
-yes | unminimize
 EOT
 
 # Set locale
