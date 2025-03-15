@@ -4,8 +4,6 @@ rm -rf /boot/*old
 cp /boot/vmlinuz* /efi/EFI/Linux/kernel.new.efi
 cp /boot/initramfs* /efi/EFI/Linux/initramfs.new.img
 cp /boot/System.map* /efi/EFI/Linux/System.new.map
-cp /boot/intel-uc.img /efi/EFI/Linux/intel-uc.img
-cp /boot/amd-uc.img /efi/EFI/Linux/amd-uc.img
 mv /efi/EFI/Linux/kernel.efi /efi/EFI/Linux/kernel.backup.efi
 mv /efi/EFI/Linux/initramfs.img /efi/EFI/Linux/initramfs.backup.img
 mv /efi/EFI/Linux/System.map /efi/EFI/Linux/System.backup.map
