@@ -5,7 +5,10 @@ local status, lspconfig = pcall(require, "lspconfig")
 if not status then
 	return
 end
-local mason_lspconfig = require("mason-lspconfig")
+local status, mason_lspconfig = pcall(require, "mason-lspconfig")
+if not status then
+	return
+end
 
 --[[ set_diagnostics_config()
 -- Initialize Vim diagnostics settings
