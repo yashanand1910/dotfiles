@@ -20,6 +20,7 @@ apt-get install -y zsh
 apt-get install -y wget
 apt-get install -y curl
 apt-get install -y sudo
+apt-get install -y tmux
 apt-get install -y python3-pip
 apt-get install -y python3-venv
 apt-get install -y gpg
@@ -53,6 +54,57 @@ apt-get update
 apt-get install -y docker-ce-cli
 EOT
 
+# Setup NVIDIA container toolkit
+RUN <<EOT
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+apt-get update
+apt-get install -y nvidia-container-toolkit
+nvidia-ctk runtime configure --runtime=docker
+EOT
+
+# Setup neovim
+RUN <<EOT
+set -eux
+curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz
+rm -rf /opt/nvim
+tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+rm nvim-linux-x86_64.tar.gz
+EOT
+
+# Setup go
+RUN <<EOT
+set -eux
+wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+rm -rf /usr/local/go
+tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+ln -s /usr/local/go/bin/go /usr/local/bin/go
+rm go${GO_VERSION}.linux-amd64.tar.gz
+EOT
+
+# Setup miscelaneous
+RUN <<EOT
+set -eux
+apt-get install -y ripgrep
+apt-get install -y btop
+curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+EOT
+
+# Setup github CLI
+RUN <<EOT
+set -eux
+(type -p wget >/dev/null || (apt update && apt-get install wget -y)) \
+&& mkdir -p -m 755 /etc/apt/keyrings \
+&& wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+&& chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+&& apt update \
+&& apt install gh -y
+EOT
+
 # Setup user
 RUN <<EOT
 set -eux
@@ -61,7 +113,6 @@ groupmod -n ${USER} ubuntu
 usermod -d /home/${USER} -m ${USER}
 usermod -c "${USER}" -g ${USER} -G sudo -s /bin/zsh ${USER}
 echo "${USER} ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}
-mount -n -o remount,suid /
 EOT
 USER ${USER}
 WORKDIR /home/${USER}
@@ -83,69 +134,8 @@ ENV PROMPT_CTX="dev"
 # Setup tmux
 RUN <<EOT
 set -eux
-sudo apt-get install -y tmux
 mkdir -p ~/.tmux/plugins
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-EOT
-
-# Setup neovim
-RUN <<EOT
-set -eux
-curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-sudo ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-rm nvim-linux-x86_64.tar.gz
-EOT
-
-# Setup NVIDIA container toolkit
-RUN <<EOT
-curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-sudo apt-get update
-sudo apt-get install -y nvidia-container-toolkit
-sudo nvidia-ctk runtime configure --runtime=docker
-EOT
-
-# Setup node (for nvim plugins)
-RUN <<EOT
-set -eux
-curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
-sudo -E bash nodesource_setup.sh
-sudo apt-get install -y nodejs
-rm nodesource_setup.sh
-EOT
-
-# Setup github CLI
-RUN <<EOT
-set -eux
-(type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
-&& sudo mkdir -p -m 755 /etc/apt/keyrings \
-&& wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-&& sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-&& sudo apt update \
-&& sudo apt install gh -y
-EOT
-
-# Setup go
-RUN <<EOT
-set -eux
-wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go
-sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
-sudo ln -s /usr/local/go/bin/go /usr/local/bin/go
-rm go${GO_VERSION}.linux-amd64.tar.gz
-EOT
-
-# Setup miscelaneous
-RUN <<EOT
-set -eux
-sudo apt-get install -y ripgrep
-sudo apt-get install -y btop
-sudo curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 EOT
 
 # Setup dotfiles
