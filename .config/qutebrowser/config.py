@@ -92,3 +92,5 @@ c.bindings.key_mappings['<Ctrl-M>'] = '<Return>'
 
 # with config.pattern('excalidraw.com') as p:
 #     p.input.mode_override = 'passthrough'
+
+c.content.headers.user_agent = 'Mozilla/5.0 ({os_info}) AppleWebKit/{webkit_version} (KHTML, like Gecko) {upstream_browser_key}/118.1.5615.213 Safari/{webkit_version} slack.com'

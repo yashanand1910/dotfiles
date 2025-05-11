@@ -7,15 +7,16 @@ git push || true
 
 set eux
 
-docker build -t yashanand1910/dev .
+docker buildx build --platform linux/amd64,/linux/arm64 -t yashanand1910/dev .
 
 DOCKERFILE_DIR=$PWD
 (
-    cd $HOME # since we are accessing some files from $HOME during build
-    docker build \
-        --build-arg GITHUB_KEY=$GITHUB_KEY \
-        --build-arg DOCKERHUB_KEY=$DOCKERHUB_KEY \
-        -t yashanand1910/dev-private -f $DOCKERFILE_DIR/private.Dockerfile .
+    cd "$HOME" || exit # since we are accessing some files from $HOME during build
+    docker buildx build \
+        --platform linux/amd64,/linux/arm64 \
+        --build-arg GITHUB_KEY="$GITHUB_KEY" \
+        --build-arg DOCKERHUB_KEY="$DOCKERHUB_KEY" \
+        -t yashanand1910/dev-private -f "$DOCKERFILE_DIR"/private.Dockerfile .
 )
 
 docker push yashanand1910/dev:latest
