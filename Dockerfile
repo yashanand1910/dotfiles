@@ -61,6 +61,7 @@ groupmod -n ${USER} ubuntu
 usermod -d /home/${USER} -m ${USER}
 usermod -c "${USER}" -g ${USER} -G sudo -s /bin/zsh ${USER}
 echo "${USER} ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/${USER}
+mount -n -o remount,suid /
 EOT
 USER ${USER}
 WORKDIR /home/${USER}
