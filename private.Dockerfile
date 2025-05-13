@@ -78,6 +78,15 @@ ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 rm nvim-linux-x86_64.tar.gz
 EOT
 
+# Setup node (for nvim plugins)
+RUN <<EOT
+set -eux
+curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh
+bash nodesource_setup.sh
+apt-get install -y nodejs
+rm nodesource_setup.sh
+EOT
+
 # Setup go
 RUN <<EOT
 set -eux
