@@ -210,11 +210,10 @@ local plugins = {
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		build = "cd app && npm install",
-		init = function()
-			vim.g.mkdp_filetypes = { "markdown" }
-		end,
 		ft = { "markdown" },
+		build = function()
+			vim.fn["mkdp#util#install"]()
+		end,
 	},
 	{
 		"smjonas/inc-rename.nvim", --> Incremental rename
@@ -269,8 +268,12 @@ local plugins = {
 	{
 		"williamboman/mason.nvim", --> LSP Manager
 		config = true,
+		version = "^1.0.0",
 	},
-	"williamboman/mason-lspconfig.nvim", --> Bridge between Mason and lspconfig
+	{
+		"williamboman/mason-lspconfig.nvim",
+		version = "^1.0.0",
+	}, --> Bridge between Mason and lspconfig
 	{
 		"L3MON4D3/LuaSnip", --> Snippet engine that accepts VS Code style snippets
 		build = "make install_jsregexp",

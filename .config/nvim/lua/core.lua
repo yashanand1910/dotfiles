@@ -40,6 +40,7 @@ do
 		{ "foldlevel", 1 }, --> Ignored when expr, but when folding by "marker", it only folds folds w/in a fold only
 		{ "foldenable", false }, --> True for "marker" + level = 1, false for TS folding
 		{ "undofile", true }, --> Persistent undo
+		{ "clipboard", "unnamedplus" }, --> Use system clipboard
 	}
 	-- Folding using TreeSitter --
 	opt.foldexpr = "nvim_treesitter#foldexpr()"

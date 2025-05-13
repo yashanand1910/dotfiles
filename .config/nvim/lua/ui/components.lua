@@ -64,7 +64,7 @@ end
 -- @requires vim.g.linter_status variable created in nvim's LSP settings
 --]]
 M.linter_status = function()
-	if #(vim.lsp.get_active_clients({ bufnr = 0 })) == 0 then
+	if #(vim.lsp.get_clients({ bufnr = 0 })) == 0 then
 		return ""
 	end
 	return vim.g.linter_status and "󰃢 " or ""
@@ -130,7 +130,7 @@ end
 M.lsp_server = function()
 	local s = ""
 	local n = 0
-	for _, client in ipairs(vim.lsp.get_active_clients()) do
+	for _, client in ipairs(vim.lsp.get_clients()) do
 		if client.attached_buffers[vim.api.nvim_get_current_buf()] then
 			local name = nil
 			if client.name == "GitHub Copilot" or client.name == "copilot" then
@@ -165,7 +165,7 @@ end
 --         Else Formatted string of number of errors, warnings, hints, and info (not included if 0)
 --]]
 M.lsp_status = function()
-	if #(vim.lsp.get_active_clients()) == 0 then
+	if #(vim.lsp.get_clients()) == 0 then
 		return ""
 	end
 
