@@ -91,27 +91,19 @@ plugins=(
     git
     fzf
     zsh-autosuggestions
+    zsh-github-copilot
 )
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
-bindkey '^\' zsh_gh_copilot_explain  # bind Ctrl+\ to explain
-bindkey '^[\' zsh_gh_copilot_suggest  # bind Alt+\ to suggest
+bindkey '^K' zsh_gh_copilot_explain
+bindkey '^O' zsh_gh_copilot_suggest
 
 export FZF_BASE=~/.fzf.zsh
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-
-# TODO:Kitty background blur
-# Blur {{{
-# export DISPLAY=:0
-# if [[ $(ps -p $PPID -o comm) =~ '^yakuake|kitty$' ]]; then
-#         for wid in $(xdotool search --pid $PPID); do
-#             xprop -f _KDE_NET_WM_BLUR_BEHIND_REGION 32c -set _KDE_NET_WM_BLUR_BEHIND_REGION 0 -id $wid; done
-# fi
-# }}}
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -152,19 +144,19 @@ export NVM_DIR="$HOME/.nvm"
 
 # LINUX-ONLY CONFIG (non-macOS)
 if [[  "$(uname)" == "Linux" ]]; then
-  # Lima BEGIN (for VM only)
-  # Make sure iptables and mount.fuse3 are available
-  PATH="$PATH:/usr/sbin:/sbin"
-  export PATH
-  # Lima END
-  # opam configuration
-  [[ ! -r /home/yashanand.linux/.opam/opam-init/init.zsh ]] || source /home/yashanand.linux/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
+    # Lima BEGIN (for VM only)
+    # Make sure iptables and mount.fuse3 are available
+    PATH="$PATH:/usr/sbin:/sbin"
+    export PATH
+    # Lima END
+    # opam configuration
+    [[ ! -r /home/yashanand.linux/.opam/opam-init/init.zsh ]] || source /home/yashanand.linux/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 
-  # Start display server
-  # if [[ -z "$DISPLAY" ]] && [[ $(tty) = /dev/tty1 ]]; then
-  #     exec startx
-  #     # dbus-run-session Hyprland
-  # fi
-  # neofetch
+    # Start display server
+    # if [[ -z "$DISPLAY" ]] && [[ $(tty) = /dev/tty1 ]]; then
+    #     exec startx
+    #     # dbus-run-session Hyprland
+    # fi
+    # neofetch
 fi
 

@@ -35,11 +35,9 @@ apt-get install -y gdb
 EOT
 
 # Set locale
-RUN <<EOT
-set -eux
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-locale-gen
-EOT
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # Setup docker (CLI only for docker-in-docker)
 RUN <<EOT
@@ -115,6 +113,8 @@ set -eux
 && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
 && apt update \
 && apt install gh -y
+gh auth login -h github.com -p ssh --skip-ssh-key --with-token < <(echo ${GITHUB_KEY})
+gh extension install github/gh-copilot
 EOT
 
 # Setup user

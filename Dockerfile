@@ -32,11 +32,9 @@ apt-get install -y gdb
 EOT
 
 # Set locale
-RUN <<EOT
-set -eux
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-locale-gen
-EOT
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 # Setup docker (CLI only for docker-in-docker)
 RUN <<EOT

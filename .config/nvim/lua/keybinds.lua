@@ -459,6 +459,8 @@ local key_opt = {
 	{ "n", "<C-Down>", ":resize +2<CR>", "Buffer resize down" },
 	{ "n", "<C-Left>", ":vertical resize -2<CR>", "Buffer resize left" },
 	{ "n", "<C-Right>", ":vertical resize +2<CR>", "Buffer resize right" },
+	{ "n", "<C-w>x", ":split<CR>", "Split current buffer horizontally" },
+	{ "n", "<C-w>v", ":vsplit<CR>", "Split current buffer vertically" },
 	{
 		"n",
 		"<leader>bl",
@@ -650,6 +652,18 @@ local key_opt = {
 	-- Config --
 	{
 		"n",
+		"<leader>Cc",
+		function()
+			require("telescope.builtin").find_files({
+				cwd = "~/.config/nvim/lua",
+				prompt_title = "Nvim Config",
+				hidden = true,
+			})
+		end,
+		"Open nvim lsp config directory",
+	},
+	{
+		"n",
 		"<leader>Ci",
 		":tabnew ~/.config/nvim/init.lua<CR>",
 		"Open nvim config (init.lua)",
@@ -696,6 +710,12 @@ local key_opt = {
 	{ "n", "<leader>vc", ":VimuxClearTerminalScreen<CR>", "Tmux clear" },
 	{ "n", "<leader>vi", ":VimuxInspectRunner<CR>", "Tmux inspect" },
 	{ "n", "<leader>vv", ":VimuxRunLastCommand<CR>", "Tmux last command" },
+
+	-- LLM --
+	{ "n", "<leader>ac", ":LLMSessionToggle<CR>", "LLM session toggle" },
+	{ "v", "<leader>ac", ":LLMAppHandler AttachToChat<CR>", "LLM attach to chat" },
+	{ "v", "<leader>ad", ":LLMAppHandler Ask<CR>", "LLM ask" },
+	{ "v", "<leader>ae", ":LLMSelectedTextHandler explain<CR>", "LLM explain" },
 
 	-- Leetcode --
 	{ "n", "<leader>LL", ":LBQuestions<CR>", "LeetCode questions" },
