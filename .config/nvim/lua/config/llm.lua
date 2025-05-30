@@ -26,9 +26,9 @@ llm.setup({
 		["Input:Cancel"] = { mode = { "n", "i" }, key = "<Esc>" },
 		["Input:Resend"] = { mode = { "n", "i" }, key = "<C-r>" },
 		-- Switch from the output window to the input window.
-		["Focus:Input"] = { mode = "n", key = { "i", "<C-w>" } },
+		["Focus:Input"] = { mode = "n", key = { "i", "<C-j>" } },
 		-- Switch from the input window to the output window.
-		["Focus:Output"] = { mode = { "n", "i" }, key = "<C-w>" },
+		["Focus:Output"] = { mode = { "n", "i" }, key = "<C-k>" },
 
 		-- only works when "save_session = true"
 		["Input:HistoryNext"] = { mode = { "n", "i" }, key = "<C-n>" },
