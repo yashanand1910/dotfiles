@@ -77,11 +77,11 @@ else
     echo "Unsupported architecture: $(uname -m)"
     exit 1
 fi
-curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-$(uname -m).tar.gz
+curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz
 rm -rf /opt/nvim
-tar -C /opt -xzf nvim-linux-$(uname -m).tar.gz
-ln -s /opt/nvim-linux-$(uname -m)/bin/nvim /usr/local/bin/nvim
-rm nvim-linux-$(uname -m).tar.gz
+tar -C /opt -xzf nvim-linux-$(ARCH).tar.gz
+ln -s /opt/nvim-linux-${ARCH}/bin/nvim /usr/local/bin/nvim
+rm nvim-linux-${ARCH}.tar.gz
 EOT
 
 # Setup node (for nvim plugins)
