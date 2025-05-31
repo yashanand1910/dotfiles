@@ -66,11 +66,11 @@ EOT
 # Setup neovim
 RUN <<EOT
 set -eux
-curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz
+curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-$(uname -m).tar.gz
 rm -rf /opt/nvim
-tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
-rm nvim-linux-x86_64.tar.gz
+tar -C /opt -xzf nvim-linux-$(uname -m).tar.gz
+ln -s /opt/nvim-linux-$(uname -m)/bin/nvim /usr/local/bin/nvim
+rm nvim-linux-$(uname -m).tar.gz
 EOT
 
 # Setup node (for nvim plugins)
@@ -85,11 +85,19 @@ EOT
 # Setup go
 RUN <<EOT
 set -eux
-wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+if [ $(uname -m) = "aarch64" ]; then
+    ARCH=arm64
+elif [ $(uname -m) = "x86_64" ]; then
+    ARCH=amd64
+else
+    echo "Unsupported architecture: $(uname -m)"
+    exit 1
+fi
+wget https://go.dev/dl/go${GO_VERSION}.linux-${ARCH}.tar.gz
 rm -rf /usr/local/go
-tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+tar -C /usr/local -xzf go${GO_VERSION}.linux-${ARCH}.tar.gz
 ln -s /usr/local/go/bin/go /usr/local/bin/go
-rm go${GO_VERSION}.linux-amd64.tar.gz
+rm go${GO_VERSION}.linux-${ARCH}.tar.gz
 EOT
 
 # Setup miscelaneous
