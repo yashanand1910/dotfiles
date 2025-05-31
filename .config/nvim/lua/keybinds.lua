@@ -655,7 +655,7 @@ local key_opt = {
 		"<leader>Cc",
 		function()
 			require("telescope.builtin").find_files({
-				cwd = "~/.config/nvim/lua",
+				cwd = "~/.config/nvim",
 				prompt_title = "Nvim Config",
 				hidden = true,
 			})
