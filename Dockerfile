@@ -76,7 +76,7 @@ else
 fi
 curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-${ARCH}.tar.gz
 rm -rf /opt/nvim
-tar -C /opt -xzf nvim-linux-$(ARCH).tar.gz
+tar -C /opt -xzf nvim-linux-${ARCH}.tar.gz
 ln -s /opt/nvim-linux-${ARCH}/bin/nvim /usr/local/bin/nvim
 rm nvim-linux-${ARCH}.tar.gz
 EOT
