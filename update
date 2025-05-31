@@ -22,5 +22,5 @@ DOCKERFILE_DIR=$PWD
 docker push yashanand1910/dev:latest
 docker push yashanand1910/dev-private:latest
 
-# docker system prune -f --volumes
+docker system prune -f --volumes
 # docker buildx prune -f

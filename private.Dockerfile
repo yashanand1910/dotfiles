@@ -9,8 +9,8 @@ ARG UID=1000
 ARG GITHUB_KEY
 ARG DOCKERHUB_KEY
 
-ARG GO_VERSION=1.23.5
-ARG NVIM_VERSION=0.11.1
+ARG GO_VERSION=1.24.3
+ARG NVIM_VERSION=0.11.2
 
 # Install packages
 RUN <<EOT
@@ -69,6 +69,14 @@ EOT
 # Setup neovim
 RUN <<EOT
 set -eux
+if [ $(uname -m) = "aarch64" ]; then
+    ARCH=arm64
+elif [ $(uname -m) = "x86_64" ]; then
+    ARCH=x86_64
+else
+    echo "Unsupported architecture: $(uname -m)"
+    exit 1
+fi
 curl -LO https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-$(uname -m).tar.gz
 rm -rf /opt/nvim
 tar -C /opt -xzf nvim-linux-$(uname -m).tar.gz
