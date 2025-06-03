@@ -41,6 +41,7 @@ local server_list = {
 	"jsonls",
 	"dockerls",
 	"yamlls",
+	"rust_analyzer",
 }
 
 -- nvim_cmp capabilities

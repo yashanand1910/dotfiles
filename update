@@ -7,7 +7,7 @@ git push || true
 
 set eux
 
-docker buildx build --platform linux/amd64,linux/arm64 -t yashanand1910/dev --load .
+# docker buildx build --platform linux/amd64,linux/arm64 -t yashanand1910/dev --load .
 
 DOCKERFILE_DIR=$PWD
 (
@@ -19,7 +19,7 @@ DOCKERFILE_DIR=$PWD
         -t yashanand1910/dev-private -f "$DOCKERFILE_DIR"/private.Dockerfile --load .
 )
 
-docker push yashanand1910/dev:latest
+# docker push yashanand1910/dev:latest
 docker push yashanand1910/dev-private:latest
 
 docker system prune -f --volumes

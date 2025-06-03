@@ -17,6 +17,7 @@ c.statusbar.show = 'in-mode'
 c.scrolling.bar = 'when-searching'
 c.window.hide_decoration = True
 c.tabs.show = 'multiple'
+c.editor.command = ['kitty', '-e', 'nvim', '{}']
 
 # c.content.user_stylesheets = ["~/.config/qutebrowser/solarized-dark.css"]
 c.colors.webpage.preferred_color_scheme = 'dark'
