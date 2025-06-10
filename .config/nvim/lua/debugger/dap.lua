@@ -33,8 +33,6 @@ pcall(load_launchjs) -- XXX: ignore errors for now
 
 -- Load vscode launch.json configs
 
-local mason = require("mason-registry")
-
 dap.adapters.debugpy = {
 	type = "executable",
 	command = "python3",
@@ -58,66 +56,46 @@ table.insert(pyconfig, {
 	-- pythonPath = debugpy_path .. "/venv/bin/python",
 })
 
-local success, delve
-success, delve = pcall(mason.get_package, "delve")
-if success then
-	local delve_path = delve.get_install_path(delve)
-	dap.adapters.go = {
-		id = "go",
-		type = "server",
-		port = 38697,
-		executable = {
-			command = delve_path .. "/dlv",
-			args = { "dap", "-l", ":38697" },
-		},
-	}
-end
+dap.adapters.go = {
+	id = "go",
+	type = "server",
+	port = 38697,
+	executable = {
+		command = vim.fn.exepath("dlv"),
+		args = { "dap", "-l", ":38697" },
+	},
+}
 
-local chrome_dbg_adapter
-success, chrome_dbg_adapter = pcall(mason.get_package, "delve")
-if success then
-	local chrome_dbg_adapter_path = chrome_dbg_adapter.get_install_path(chrome_dbg_adapter)
-	dap.adapters.chrome = {
-		type = "executable",
-		command = "node",
-		args = {
-			chrome_dbg_adapter_path .. "/out/src/chromeDebug.js",
-		},
-	}
-end
+dap.adapters.chrome = {
+	type = "executable",
+	command = "node",
+	args = {
+		vim.fn.expand("$MASON/bin/chrome-debug-adapter") .. "/out/src/chromeDebug.js",
+	},
+}
 
 -- INFO: see https://github.com/mfussenegger/nvim-dap/wiki/C-C---Rust-(via--codelldb)
 
-local codelldb_adapter
-success, codelldb_adapter = pcall(mason.get_package, "codelldb")
-if success then
-	local codelldb_adapter_path = codelldb_adapter.get_install_path(codelldb_adapter)
-	dap.adapters.codelldb = {
-		type = "server",
-		port = "13000",
-		executable = {
-			command = codelldb_adapter_path .. "/extension/adapter/codelldb",
-			args = { "--port", "13000" },
-		},
-		name = "codelldb",
-	}
-end
+dap.adapters.codelldb = {
+	type = "server",
+	port = "13000",
+	executable = {
+		command = vim.fn.expand("$MASON/bin/codelldb") .. "/extension/adapter/codelldb",
+		args = { "--port", "13000" },
+	},
+	name = "codelldb",
+}
 
-local cpptools_adapter
-success, cpptools_adapter = pcall(mason.get_package, "cpptools")
-if success then
-	local cpptools_adapter_path = cpptools_adapter.get_install_path(cpptools_adapter)
-	dap.adapters.cppdbg = {
-		id = "cppdbg",
-		type = "executable",
-		command = cpptools_adapter_path .. "/extension/debugAdapters/bin/OpenDebugAD7",
-	}
-	dap.adapters.rust = {
-		id = "cppdbg",
-		type = "executable",
-		command = cpptools_adapter_path .. "/extension/debugAdapters/bin/OpenDebugAD7",
-	}
-end
+dap.adapters.cppdbg = {
+	id = "cppdbg",
+	type = "executable",
+	command = vim.fn.expand("$MASON/bin/cpptools") .. "/extension/debugAdapters/bin/OpenDebugAD7",
+}
+dap.adapters.rust = {
+	id = "cppdbg",
+	type = "executable",
+	command = vim.fn.expand("$MASON/bin/cpptools"),
+}
 
 -- FIXME: ocaml debugger / doesn't work
 

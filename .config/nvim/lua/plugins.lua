@@ -1,7 +1,7 @@
 --[[ plugins.lua
 -- This file does:
 --   - Initialize the list of plug-ins to be installed
---   - Bootstrap Lazy plugin manager and install plug-ins
+--   - Bootstrap Lazy plugin manager and install plug-inskey
 --   - Initialize plug-ins using each setup() function
 --   - For some plug-ins, provide a small configuration work in `config`
 --     This is limited to basic config, and extensive config for some plug-ins will be done elsewhere
@@ -261,7 +261,6 @@ local plugins = {
 	{
 		"williamboman/mason.nvim", --> LSP Manager
 		config = true,
-		version = "^1.0.0",
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",

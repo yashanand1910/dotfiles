@@ -131,6 +131,22 @@ set -eux
 && apt install gh -y
 EOT
 
+# Setup kubectl
+RUN <<EOT
+if [ $(uname -m) = "aarch64" ]; then
+    ARCH=arm64
+elif [ $(uname -m) = "x86_64" ]; then
+    ARCH=amd64
+else
+    echo "Unsupported architecture: $(uname -m)"
+    exit 1
+fi
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${ARCH}/kubectl"
+install kubectl /usr/local/bin
+wget https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_${ARCH}.deb
+apt install -y ./k9s_linux_${ARCH}.deb
+EOT
+
 # Setup user
 RUN <<EOT
 set -eux

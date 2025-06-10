@@ -128,6 +128,27 @@ set -eux
 && apt install gh -y
 EOT
 
+# Setup kubectl
+RUN <<EOT
+if [ $(uname -m) = "aarch64" ]; then
+    ARCH=arm64
+elif [ $(uname -m) = "x86_64" ]; then
+    ARCH=amd64
+else
+    echo "Unsupported architecture: $(uname -m)"
+    exit 1
+fi
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${ARCH}/kubectl"
+install kubectl /usr/local/bin
+wget https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_${ARCH}.deb
+apt install -y ./k9s_linux_${ARCH}.deb
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null
+apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list
+apt-get update
+apt-get install helm
+EOT
+
 # Setup user
 RUN <<EOT
 set -eux
