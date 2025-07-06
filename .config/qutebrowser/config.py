@@ -7,11 +7,6 @@ c.url.searchengines = {'DEFAULT': 'https://google.com/search?hl=en&q={}'}
 c.url.default_page = 'https://google.com'
 c.url.start_pages = ['https://google.com']
 c.downloads.location.directory = '~/downloads'
-c.content.blocking.whitelist = [
-    'click.redditmail.com',
-    'www.googleadservices.com',
-    'ad.doubleclick.net',
-]
 
 c.statusbar.show = 'in-mode'
 c.scrolling.bar = 'when-searching'
@@ -29,6 +24,8 @@ c.input.insert_mode.auto_load = False
 c.zoom.default = 100
 c.fonts.default_family = 'JetBrains Mono'
 c.qt.highdpi = True
+# c.qt.force_software_rendering = 'chromium'
+# c.backend = 'webkit'
 # c.fonts.default_size = '12pt'
 # c.fonts.hints = '12pt'
 c.colors.tabs.even.bg = 'rgb(0, 0, 0)'
@@ -94,4 +91,4 @@ c.bindings.key_mappings['<Ctrl-M>'] = '<Return>'
 # with config.pattern('excalidraw.com') as p:
 #     p.input.mode_override = 'passthrough'
 
-c.content.headers.user_agent = 'Mozilla/5.0 ({os_info}) AppleWebKit/{webkit_version} (KHTML, like Gecko) {upstream_browser_key}/118.1.5615.213 Safari/{webkit_version} slack.com'
+# c.content.headers.user_agent = 'Mozilla/5.0 ({os_info}) AppleWebKit/{webkit_version} (KHTML, like Gecko) {upstream_browser_key}/118.1.5615.213 Safari/{webkit_version} slack.com'
