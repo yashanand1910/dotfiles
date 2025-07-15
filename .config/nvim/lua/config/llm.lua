@@ -208,23 +208,23 @@ llm.setup({
 					},
 					action = nil,
 				},
-				copy_suggestion_code = {
-					mapping = {
-						mode = "n",
-						keys = { "Y", "y" },
-					},
-				},
+				-- copy_suggestion_code = {
+				-- 	mapping = {
+				-- 		mode = "n",
+				-- 		keys = { "Y", "y" },
+				-- 	},
+				-- },
 				accept = {
 					mapping = {
 						mode = "n",
-						keys = { "Y", "y" },
+						keys = { "C-g" },
 					},
 					action = nil,
 				},
 				reject = {
 					mapping = {
 						mode = "n",
-						keys = { "N", "n" },
+						keys = { "C-c" },
 					},
 					action = nil,
 				},
@@ -255,7 +255,7 @@ llm.setup({
 				accept = {
 					mapping = {
 						mode = "n",
-						keys = { "Y", "y" },
+						keys = { "C-g" },
 					},
 					action = nil,
 				},
@@ -263,7 +263,7 @@ llm.setup({
 				reject = {
 					mapping = {
 						mode = "n",
-						keys = { "N", "n" },
+						keys = { "C-c" },
 					},
 					action = nil,
 				},
