@@ -6,6 +6,8 @@ local opt = vim.opt
 
 -- vim.g.python3_host_prog = "$HOME/.pyenv/versions/neovim/bin/python"
 
+opt.formatoptions:remove("t") -- Disable auto-wrapping of comments using textwidth
+
 --------------------------------------------------------- OPT: ---------------------------------------------------------
 
 do
