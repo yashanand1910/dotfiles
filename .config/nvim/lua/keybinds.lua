@@ -711,11 +711,16 @@ local key_opt = {
 	{ "n", "<leader>vi", ":VimuxInspectRunner<CR>", "Tmux inspect" },
 	{ "n", "<leader>vv", ":VimuxRunLastCommand<CR>", "Tmux last command" },
 
-	-- LLM --
-	{ "n", "<leader>ac", ":LLMSessionToggle<CR>", "LLM session toggle" },
-	{ "v", "<leader>ac", ":LLMAppHandler AttachToChat<CR>", "LLM attach to chat" },
-	{ "v", "<leader>ad", ":LLMAppHandler Ask<CR>", "LLM ask" },
-	{ "v", "<leader>ae", ":LLMSelectedTextHandler explain<CR>", "LLM explain" },
+	-- Avante --
+	{ "n", "<leader>as", ":AvanteToggle<CR>", "Avante toggle" },
+	{ "n", "<leader>aa", ":AvanteAsk<CR>", "Avante ask" },
+	{ "n", "<leader>an", ":AvanteChatNew<CR>", "Avante new" },
+	{ "v", "<leader>aa", ":AvanteAsk<CR>", "Avante ask" },
+	{ "n", "<leader>am", ":AvanteModels<CR>", "Avante models" },
+	{ "v", "<leader>ae", ":AvanteEdit<CR>", "Avante edit" },
+	{ "n", "<leader>al", ":AvanteHistory<CR>", "Avante history" },
+	-- { "v", "<leader>ad", ":LLMAppHandler Ask<CR>", "LLM ask" },
+	-- { "v", "<leader>ae", ":LLMSelectedTextHandler explain<CR>", "LLM explain" },
 
 	-- Leetcode --
 	{ "n", "<leader>LL", ":LBQuestions<CR>", "LeetCode questions" },
