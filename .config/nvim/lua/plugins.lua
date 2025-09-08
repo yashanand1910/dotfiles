@@ -259,7 +259,6 @@ local plugins = {
 	},
 	{
 		"Kurama622/llm.nvim",
-		enabled = false,
 		dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
 		cmd = { "LLMSessionToggle", "LLMSelectedTextHandler", "LLMAppHandler" },
 		config = true,
@@ -280,7 +279,7 @@ local plugins = {
 			"stevearc/dressing.nvim", -- for input provider dressing
 			"folke/snacks.nvim", -- for input provider snacks
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-			"zbirenbaum/copilot.lua", -- for providers='copilot'
+			-- "zbirenbaum/copilot.lua", -- for providers='copilot'
 			{
 				-- support for image pasting
 				"HakonHarnes/img-clip.nvim",

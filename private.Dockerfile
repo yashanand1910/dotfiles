@@ -32,6 +32,9 @@ apt-get install -y locales
 apt-get install -y man-db
 apt-get install -y zip unzip tar
 apt-get install -y gdb
+apt-get install -y jq
+apt-get install -y cmake
+apt-get install -y bc
 EOT
 
 # Set locale

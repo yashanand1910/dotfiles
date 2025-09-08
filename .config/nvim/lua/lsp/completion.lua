@@ -3,6 +3,9 @@
 --]]
 local cmp = require("cmp")
 local luasnip = require("luasnip")
+vim.g.copilot_filetypes = {
+	gitcommit = true,
+}
 
 -- Completion icons
 -- https://github.com/neovim/nvim-lspconfig/wiki/UI-Customization#completion-kinds
