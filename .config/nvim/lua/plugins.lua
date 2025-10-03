@@ -322,14 +322,6 @@ local plugins = {
 	"hrsh7th/cmp-nvim-lua", --> nvim-cmp source for Neovim API
 	"hrsh7th/nvim-cmp", --> Completion Engine
 	"github/copilot.vim", --> GitHub Copilot
-	{
-		"nvimdev/lspsaga.nvim", --> LSP improvements (mainly breadcrumb)
-		config = true,
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-tree/nvim-web-devicons",
-		},
-	},
 
 	-- Debugging
 
