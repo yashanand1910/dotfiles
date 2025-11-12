@@ -32,3 +32,5 @@ formatter.setup({
 		proto = { "buf" },
 	},
 })
+
+vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"

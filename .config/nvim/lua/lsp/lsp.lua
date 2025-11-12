@@ -47,69 +47,52 @@ local cmp_capability = require("cmp_nvim_lsp").default_capabilities(vim.lsp.prot
 -- Let Mason-lspconfig handle LSP setup
 mason_lspconfig.setup({
 	ensure_installed = server_list,
-	automatic_installation = true,
+	automatic_enable = true,
 })
 
-mason_lspconfig.setup_handlers({
-	-- Default handler
-	function(server_name)
-		config(server_name, { capabilities = cmp_capability, on_attach = on_attach })
-		vim.lsp.enable(server_name)
-	end,
-	["clangd"] = function()
-		config("clangd", {
-			capabilities = cmp_capability,
-			on_attach = on_attach,
-			filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
-		})
-		vim.lsp.enable("clangd")
-	end,
-	-- Lua gets special treatment
-	["lua_ls"] = function()
-		config("lua_ls", {
-			capabilities = cmp_capability,
-			on_attach = on_attach,
-			settings = {
-				-- https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/lua.template.editorconfig
-				Lua = {
-					format = {
-						enable = true,
-					},
-					diagnostics = {
-						globals = { "vim", "on_attach" }, --> Make diagnostics tolerate vim.fun.stuff
-					},
-					workspace = {
-						library = vim.api.nvim_get_runtime_file("lua", true), --> Expose some Neovim API
-						checkThirdParty = false, --> Disable third party library check
-					},
-					telemetry = {
-						enable = false,
-					},
-				},
+config("clangd", {
+	capabilities = cmp_capability,
+	on_attach = on_attach,
+	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+})
+
+config("lua_ls", {
+	capabilities = cmp_capability,
+	on_attach = on_attach,
+	settings = {
+		-- https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/lua.template.editorconfig
+		Lua = {
+			format = {
+				enable = false,
 			},
-		})
-		vim.lsp.enable("lua_ls")
-	end,
-	["docker_compose_language_service"] = function()
-		config("docker_compose_language_service", {
-			capabilities = cmp_capability,
-			on_attach = on_attach,
-		})
-		vim.lsp.enable("docker_compose_language_service")
-	end,
-	["pylsp"] = function()
-		config("pylsp", {
-			settings = {
-				pylsp = {
-					plugins = {
-						mccabe = { enabled = false, threshold = 30 },
-						pycodestyle = { maxLineLength = 100 },
-					},
-				},
+			diagnostics = {
+				globals = { "vim", "on_attach" }, --> Make diagnostics tolerate vim.fun.stuff
 			},
-		})
-		vim.lsp.enable("pylsp")
-	end,
+			workspace = {
+				library = vim.api.nvim_get_runtime_file("lua", true), --> Expose some Neovim API
+				checkThirdParty = false, --> Disable third party library check
+			},
+			telemetry = {
+				enable = false,
+			},
+		},
+	},
+})
+
+config("docker_compose_language_service", {
+	capabilities = cmp_capability,
+	on_attach = on_attach,
+})
+
+config("pylsp", {
+	settings = {
+		pylsp = {
+			plugins = {
+				mccabe = { enabled = false, threshold = 30 },
+				pycodestyle = { maxLineLength = 100 },
+			},
+		},
+	},
 })
 
 -- -- NOTE: Workaround for clangd encoding issue (see https://github.com/jose-elias-alvarez/null-ls.nvim/issues/428)

@@ -307,7 +307,6 @@ local plugins = {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
-		version = "^1.0.0",
 	}, --> Bridge between Mason and lspconfig
 	{
 		"L3MON4D3/LuaSnip", --> Snippet engine that accepts VS Code style snippets
