@@ -644,7 +644,7 @@ local key_opt = {
 		"<leader>lS",
 		function()
 			vim.diagnostic.config({ virtual_text = true, signs = true, underline = true })
-			-- vim.cmd("LspStart")
+			vim.cmd("LspStart")
 		end,
 		"Enable LSP diagnostics/signs",
 	},

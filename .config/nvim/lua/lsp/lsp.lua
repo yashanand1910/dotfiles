@@ -54,6 +54,7 @@ mason_lspconfig.setup_handlers({
 	-- Default handler
 	function(server_name)
 		config(server_name, { capabilities = cmp_capability, on_attach = on_attach })
+		vim.lsp.enable(server_name)
 	end,
 	["clangd"] = function()
 		config("clangd", {
@@ -61,6 +62,7 @@ mason_lspconfig.setup_handlers({
 			on_attach = on_attach,
 			filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
 		})
+		vim.lsp.enable("clangd")
 	end,
 	-- Lua gets special treatment
 	["lua_ls"] = function()
@@ -86,12 +88,14 @@ mason_lspconfig.setup_handlers({
 				},
 			},
 		})
+		vim.lsp.enable("lua_ls")
 	end,
 	["docker_compose_language_service"] = function()
 		config("docker_compose_language_service", {
 			capabilities = cmp_capability,
 			on_attach = on_attach,
 		})
+		vim.lsp.enable("docker_compose_language_service")
 	end,
 	["pylsp"] = function()
 		config("pylsp", {
@@ -104,11 +108,10 @@ mason_lspconfig.setup_handlers({
 				},
 			},
 		})
+		vim.lsp.enable("pylsp")
 	end,
 })
--- }}}
 
--- NOTE: Workaround for clangd encoding issue (see https://github.com/jose-elias-alvarez/null-ls.nvim/issues/428)
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.offsetEncoding = { "utf-16" }
-config("clangd", { capabilities = capabilities })
+-- -- NOTE: Workaround for clangd encoding issue (see https://github.com/jose-elias-alvarez/null-ls.nvim/issues/428)
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- config("clangd", { capabilities = capabilities })
