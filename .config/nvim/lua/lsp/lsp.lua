@@ -1,10 +1,7 @@
 --[[ lsp.lua
 -- Configuration for Neovim's built-in LSP
 --]]
-local status, lspconfig = pcall(require, "lspconfig")
-if not status then
-	return
-end
+local config = vim.lsp.config
 local status, mason_lspconfig = pcall(require, "mason-lspconfig")
 if not status then
 	return
@@ -56,10 +53,10 @@ mason_lspconfig.setup({
 mason_lspconfig.setup_handlers({
 	-- Default handler
 	function(server_name)
-		lspconfig[server_name].setup({ capabilities = cmp_capability, on_attach = on_attach })
+		config(server_name, { capabilities = cmp_capability, on_attach = on_attach })
 	end,
 	["clangd"] = function()
-		lspconfig.clangd.setup({
+		config("clangd", {
 			capabilities = cmp_capability,
 			on_attach = on_attach,
 			filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
@@ -67,7 +64,7 @@ mason_lspconfig.setup_handlers({
 	end,
 	-- Lua gets special treatment
 	["lua_ls"] = function()
-		lspconfig.lua_ls.setup({
+		config("lua_ls", {
 			capabilities = cmp_capability,
 			on_attach = on_attach,
 			settings = {
@@ -91,13 +88,13 @@ mason_lspconfig.setup_handlers({
 		})
 	end,
 	["docker_compose_language_service"] = function()
-		lspconfig.docker_compose_language_service.setup({
+		config("docker_compose_language_service", {
 			capabilities = cmp_capability,
 			on_attach = on_attach,
 		})
 	end,
 	["pylsp"] = function()
-		lspconfig.pylsp.setup({
+		config("pylsp", {
 			settings = {
 				pylsp = {
 					plugins = {
@@ -114,4 +111,4 @@ mason_lspconfig.setup_handlers({
 -- NOTE: Workaround for clangd encoding issue (see https://github.com/jose-elias-alvarez/null-ls.nvim/issues/428)
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.offsetEncoding = { "utf-16" }
-require("lspconfig").clangd.setup({ capabilities = capabilities })
+config("clangd", { capabilities = capabilities })
