@@ -54,6 +54,7 @@ config("clangd", {
 	capabilities = cmp_capability,
 	on_attach = on_attach,
 	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+	init_options = { clangdFileStatus = true },
 })
 
 config("lua_ls", {

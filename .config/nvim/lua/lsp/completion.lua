@@ -83,6 +83,7 @@ cmp.setup({
 			{ name = "nvim_lsp" },
 			{ name = "luasnip" },
 			{ name = "nvim_lua" },
+			{ name = "dotenv" },
 		},
 		-- Separate code related completion and buffer/path
 		{
@@ -110,8 +111,7 @@ cmp.setup({
 })
 
 -- Now we setup cmp_git
--- FIXME: This is not working
-require("cmp_git").setup()
+require("cmp_git").setup({})
 
 -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
 ---@diagnostic disable-next-line: missing-fields

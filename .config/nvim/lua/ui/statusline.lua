@@ -34,8 +34,8 @@ Statusline.build = function()
 		" %#PastelculaGreyAccent#",
 		components.git_status(),
 
-    -- Virutal env
-    components.virtual_env(),
+		-- Virutal env
+		components.virtual_env(),
 
 		-- Spacer
 		"%#Normal#",

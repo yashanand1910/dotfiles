@@ -186,12 +186,6 @@ local plugins = {
 		},
 	},
 	{
-		"petertriho/cmp-git",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
-	},
-	{
 		"ruifm/gitlinker.nvim",
 		dependencies = "nvim-lua/plenary.nvim",
 		config = true,
@@ -299,6 +293,10 @@ local plugins = {
 	},
 
 	-- LSP
+	{
+		"j-hui/fidget.nvim",
+		config = true,
+	},
 	"stevearc/conform.nvim",
 	"neovim/nvim-lspconfig", --> Neovim default LSP engine
 	{
@@ -320,6 +318,8 @@ local plugins = {
 	"hrsh7th/cmp-cmdline", --> nvim-cmp source for :commands
 	"hrsh7th/cmp-nvim-lua", --> nvim-cmp source for Neovim API
 	"hrsh7th/nvim-cmp", --> Completion Engine
+	"SergioRibera/cmp-dotenv",
+	"petertriho/cmp-git",
 	"github/copilot.vim", --> GitHub Copilot
 
 	-- Debugging

@@ -713,13 +713,26 @@ local key_opt = {
 
 	-- Avante --
 	{ "n", "<leader>as", ":AvanteToggle<CR>", "Avante toggle" },
-	{ "n", "<leader>aa", ":AvanteAsk<CR>", "Avante ask" },
+	{ "n", "<leader>ax", ":AvanteStop<CR>", "Avante stop" },
 	{ "n", "<leader>ac", ":AvanteClear<CR>", "Avante clear" },
 	{ "n", "<leader>an", ":AvanteChatNew<CR>", "Avante new" },
 	{ "n", "<leader>am", ":AvanteModels<CR>", "Avante models" },
 	{ "n", "<leader>al", ":AvanteHistory<CR>", "Avante history" },
-	{ "v", "<leader>ad", ":LLMAppHandler Ask<CR>", "LLM ask" },
-	{ "v", "<leader>ae", ":LLMSelectedTextHandler explain<CR>", "LLM explain" },
+	{
+		"v",
+		"<leader>aa",
+		function()
+			local selected_text = vim.fn.getreg("v") -- get visually selected text
+			if selected_text then
+				require("avante.api").ask({
+					floating = true,
+				})
+			else
+				print("No text selected.")
+			end
+		end,
+		"Avante ask",
+	},
 
 	-- Leetcode --
 	{ "n", "<leader>LL", ":LBQuestions<CR>", "LeetCode questions" },
