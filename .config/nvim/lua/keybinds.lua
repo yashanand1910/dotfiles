@@ -231,6 +231,7 @@ local key_opt = {
 
 	-- GitHub --
 	{ "n", "<leader>oa", ":Octo actions<CR>", "GitHub search commands" },
+	{ "n", "<leader>ou", ":Octo pr url<CR>", "GitHub PR URL" },
 	{ "n", "<leader>opl", ":Octo pr list<CR>", "GitHub PR list" },
 	{ "n", "<leader>opa", ":Octo pr create<CR>", "GitHub PR create" },
 	{ "n", "<leader>opp", ":Octo pr checkout<CR>", "GitHub PR checkout" },
@@ -725,13 +726,29 @@ local key_opt = {
 			local selected_text = vim.fn.getreg("v") -- get visually selected text
 			if selected_text then
 				require("avante.api").ask({
-					floating = true,
+					floating = false,
 				})
 			else
 				print("No text selected.")
 			end
 		end,
 		"Avante ask",
+	},
+	{
+		"v",
+		"<leader>an",
+		function()
+			local selected_text = vim.fn.getreg("v") -- get visually selected text
+			if selected_text then
+				require("avante.api").ask({
+					floating = false,
+					new_chat = true,
+				})
+			else
+				print("No text selected.")
+			end
+		end,
+		"Avante ask (new)",
 	},
 
 	-- Leetcode --

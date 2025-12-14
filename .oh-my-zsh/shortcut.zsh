@@ -37,3 +37,19 @@ alias lazydocker="TERM=xterm lazydocker"
 
 # kubernetes
 alias kc="kubectl"
+alias k9s="k9s -A --logoless --splashless"
+
+# pnpm
+export PNPM_HOME="/home/ubuntu/.local/share/pnpm"
+case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# The next line updates PATH for Nebius CLI.
+if [ -f '/home/yashanand/.nebius/path.zsh.inc' ]; then source '/home/yashanand/.nebius/path.zsh.inc'; fi
+# The next line enables shell command completion for Nebius CLI.
+if [ -f '/home/yashanand/.nebius/completion.zsh.inc' ]; then source '/home/yashanand/.nebius/completion.zsh.inc'; fi
+
+# gemini
+alias gm="NODE_NO_WARNINGS=1 gemini"

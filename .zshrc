@@ -159,17 +159,3 @@ if [[  "$(uname)" == "Linux" ]]; then
     # fi
     # neofetch
 fi
-
-
-# The next line updates PATH for Nebius CLI.
-if [ -f '/home/ubuntu/.nebius/path.zsh.inc' ]; then source '/home/ubuntu/.nebius/path.zsh.inc'; fi
-# The next line enables shell command completion for Nebius CLI.
-if [ -f '/home/ubuntu/.nebius/completion.zsh.inc' ]; then source '/home/ubuntu/.nebius/completion.zsh.inc'; fi
-
-# pnpm
-export PNPM_HOME="/home/ubuntu/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end

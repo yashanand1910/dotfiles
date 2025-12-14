@@ -13,10 +13,10 @@
 	# characters not in the chosen font will fail to render.
 	#
 	# Otherwise, fonts are interpreted in Pango format.
-	font = "JetBrains Mono"
+	font = "Noto Sans"
 
 	# Point size of text.
-	font-size = 11
+	font-size = 12
 
 	# Comma separated list of OpenType font feature settings to apply,
 	# if supported by the chosen font. The format is similar to the CSS
@@ -117,7 +117,7 @@
 	# Style of the optional text cursor.
 	#
 	# Supported values: bar, block, underscore
-	text-cursor-style = bar
+	text-cursor-style = block
 
 	# Color of the text cursor
 	#
@@ -171,7 +171,7 @@
 	height = 20%
 
 	# Window background color
-	background-color = #1B1D1E
+	background-color = #00000088
 
 	# Width of the border outlines in pixels.
 	outline-width = 0
