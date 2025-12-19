@@ -127,7 +127,12 @@ local plugins = {
 	},
 
 	-- File, search
-	{ "nvim-treesitter/nvim-treesitter" }, --> Incremental highlighting
+	{
+		"nvim-treesitter/nvim-treesitter",
+		commit = "42fc28b", -- TODO: Revert latest once stable
+		lazy = false,
+		build = ":TSUpdate",
+	}, --> Incremental highlighting
 	{
 		"nvim-telescope/telescope.nvim", --> Expandable fuzzy finer
 		opts = {
