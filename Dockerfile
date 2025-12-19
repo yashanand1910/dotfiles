@@ -9,6 +9,7 @@ ARG UID=1000
 
 ARG GO_VERSION=1.24.3
 ARG NVIM_VERSION=0.11.2
+ARG K9S_VERSION=0.50.12
 
 # Install packages
 RUN <<EOT
@@ -143,7 +144,7 @@ else
 fi
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${ARCH}/kubectl"
 install kubectl /usr/local/bin
-wget https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_linux_${ARCH}.deb
+wget https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_linux_${ARCH}.deb
 apt install -y ./k9s_linux_${ARCH}.deb
 curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | tee /usr/share/keyrings/helm.gpg > /dev/null
 apt-get install apt-transport-https --yes
