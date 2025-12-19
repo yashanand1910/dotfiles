@@ -1,6 +1,9 @@
 # sudo
 alias sudo="sudo -E"
 
+# git
+alias gd="vi +DiffviewOpen"
+
 # rm
 alias rm="rm -I -v"
 

@@ -713,6 +713,7 @@ local key_opt = {
 	{ "n", "<leader>vv", ":VimuxRunLastCommand<CR>", "Tmux last command" },
 
 	-- Avante --
+	{ "n", "<leader>aa", ":AvanteAsk<CR>", "Avante ask" },
 	{ "n", "<leader>as", ":AvanteToggle<CR>", "Avante toggle" },
 	{ "n", "<leader>ax", ":AvanteStop<CR>", "Avante stop" },
 	{ "n", "<leader>ac", ":AvanteClear<CR>", "Avante clear" },

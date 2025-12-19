@@ -134,7 +134,7 @@ M.lsp_server = function()
 		if client.attached_buffers[vim.api.nvim_get_current_buf()] then
 			local name = nil
 			if client.name == "GitHub Copilot" or client.name == "copilot" then
-				name = ""
+				name = "copilot"
 			else
 				name = client.name
 			end
