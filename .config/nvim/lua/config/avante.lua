@@ -17,7 +17,7 @@ end
 
 avante.setup({
 	mode = "agentic",
-	provider = "claude-code",
+	provider = "gemini-cli",
 	behaviour = {
 		enable_fastapply = true, -- Enable Fast Apply feature
 	},
@@ -44,24 +44,28 @@ avante.setup({
 			},
 		},
 		morph = {
-			model = "morph-v3-fast",
+			model = "morph-v3-large",
 		},
 	},
 	acp_providers = {
-		["claude-code"] = {
-			command = "npx",
-			args = { "@zed-industries/claude-code-acp" },
-			env = {
-				NODE_NO_WARNINGS = "1",
-				ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
-			},
-		},
 		["gemini-cli"] = {
 			command = "gemini",
 			args = { "--experimental-acp" },
 			env = {
 				NODE_NO_WARNINGS = "1",
 				GEMINI_API_KEY = os.getenv("GEMINI_API_KEY"),
+			},
+			auth_method = "gemini-api-key",
+		},
+		["claude-code"] = {
+			command = "npx",
+			args = { "-y", "@zed-industries/claude-code-acp" },
+			env = {
+				NODE_NO_WARNINGS = "1",
+				ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
+				ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
+				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
+				ACP_PERMISSION_MODE = "bypassPermissions",
 			},
 		},
 	},
