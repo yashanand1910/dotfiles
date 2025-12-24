@@ -1,8 +1,12 @@
 # sudo
 alias sudo="sudo -E"
 
+# grep
+alias grep="grep -sn --color=auto"
+
 # git
 alias gd="vi +DiffviewOpen"
+alias gs="vi +DiffviewFileHistory"
 
 # rm
 alias rm="rm -I -v"
