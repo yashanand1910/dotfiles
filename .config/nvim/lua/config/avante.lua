@@ -17,7 +17,7 @@ end
 
 avante.setup({
 	mode = "agentic",
-	provider = "gemini-cli",
+	provider = "claude-code",
 	behaviour = {
 		enable_fastapply = true, -- Enable Fast Apply feature
 	},
