@@ -171,19 +171,19 @@
 	height = 300
 
 	# Window background color
-	background-color = #000000ff
+	background-color = #00000055
 
 	# Width of the border outlines in pixels.
 	outline-width = 0
 
 	# Border outline color
-	outline-color = #080800
+	outline-color = #00000088
 
 	# Width of the border in pixels.
-	border-width = 0
+	border-width = 2
 
 	# Border color
-	border-color = #000000
+	border-color = #ffffff22
 
 	# Radius of window corners in pixels.
 	corner-radius = 10

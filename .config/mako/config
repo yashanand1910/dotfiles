@@ -1,12 +1,18 @@
 font=Noto Sans 11
 width=400
 height=200
-background-color=#00000033
-border-size=0
+background-color=#00000055
+border-size=2
 border-radius=10
+border-color=#ffffff22
 padding=15
 max-history=10
 icon-location=right
 max-visible=10
 ignore-timeout=1
 sort=-time
+icons=1
+group-by=summary
+
+[grouped]
+format=<b>%s</b> (%g)\n%b
