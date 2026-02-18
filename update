@@ -7,7 +7,7 @@ git push || true
 
 set eux
 
-PLATFORMS="linux/amd64,linux/arm64"
+PLATFORMS="linux/arm64"
 
 docker buildx build --platform linux/amd64,linux/arm64 -t yashanand1910/dev --load .
 
