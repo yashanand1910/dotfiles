@@ -9,7 +9,7 @@ set eux
 
 PLATFORMS="linux/arm64"
 
-docker buildx build --platform linux/amd64,linux/arm64 -t yashanand1910/dev --load .
+docker buildx build --platform $PLATFORMS -t yashanand1910/dev --load .
 
 DOCKERFILE_DIR=$PWD
 (
