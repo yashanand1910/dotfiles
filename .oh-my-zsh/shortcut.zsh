@@ -44,7 +44,7 @@ alias lazydocker="TERM=xterm lazydocker"
 
 # kubernetes
 alias kc="kubectl"
-alias k9s="k9s -A --logoless --splashless"
+alias k9s="k9s -A --logoless"
 
 # pnpm
 export PNPM_HOME="/home/ubuntu/.local/share/pnpm"
