@@ -15,6 +15,7 @@ telescope.load_extension("dap")
 
 -- Leader --
 keymap.set({ "n", "v" }, "<Space>", "<Nop>", { noremap = true }) --> Unbind space
+vim.g.maplocalleader = " " --> Space as the local leader key
 vim.g.mapleader = " " --> Space as the leader key
 
 --[[ url_handler()
@@ -226,16 +227,8 @@ local key_opt = {
 
 	-- GitHub --
 	{ "n", "<leader>oa", ":Octo actions<CR>", "GitHub search commands" },
-	{ "n", "<leader>ou", ":Octo pr url<CR>", "GitHub PR URL" },
 	{ "n", "<leader>opl", ":Octo pr list<CR>", "GitHub PR list" },
 	{ "n", "<leader>opa", ":Octo pr create<CR>", "GitHub PR create" },
-	{ "n", "<leader>opp", ":Octo pr checkout<CR>", "GitHub PR checkout" },
-	{ "n", "<leader>opM", ":Octo pr merge<CR>", "GitHub PR merge" },
-	{ "n", "<leader>ors", ":Octo review start<CR>", "GitHub PR start review" },
-	{ "n", "<leader>orx", ":Octo review close<CR>", "GitHub PR close review" },
-	{ "n", "<leader>orS", ":Octo review submit<CR>", "GitHub PR submit review" },
-	{ "n", "<leader>orr", ":Octo review resume<CR>", "GitHub PR resume review" },
-	{ "n", "<leader>ord", ":Octo review discard<CR>", "GitHub PR discard review" },
 
 	-- Testing --
 	{ "n", "<leader>tt", ":TestNearest<CR>", "Test nearest" },

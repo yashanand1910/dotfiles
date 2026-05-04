@@ -98,7 +98,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 export FZF_BASE=~/.fzf.zsh
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH"/oh-my-zsh.sh
 
 # User configuration
 
@@ -156,8 +156,3 @@ if [[  "$(uname)" == "Linux" ]]; then
     # fi
     # neofetch
 fi
-
-# The next line updates PATH for Nebius CLI.
-if [ -f '/home/ubuntu/.nebius/path.zsh.inc' ]; then source '/home/ubuntu/.nebius/path.zsh.inc'; fi
-# The next line enables shell command completion for Nebius CLI.
-if [ -f '/home/ubuntu/.nebius/completion.zsh.inc' ]; then source '/home/ubuntu/.nebius/completion.zsh.inc'; fi

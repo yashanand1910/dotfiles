@@ -177,15 +177,40 @@ local plugins = {
 			suppress_missing_scope = {
 				projects_v2 = true,
 			},
+      picker_config = {
+        mappings = {
+          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+        },
+      },
 			mappings = {
+        pull_request = {
+          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+          checkout_pr = { lhs = "<leader>opp", desc = "checkout PR" },
+          add_reviewer = { lhs = "<leader>va", desc = "add reviewer" },
+          remove_reviewer = { lhs = "<leader>vd", desc = "remove reviewer request" },
+          review_start = { lhs = "<leader>vs", desc = "start a review for the current PR" },
+          review_resume = { lhs = "<leader>vr", desc = "resume a pending review for the current PR" },
+        },
 				review_thread = {
-					close_review_tab = { lhs = "<C-q>", desc = "Close review tab" },
+          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
 				},
 				review_diff = {
-					close_review_tab = { lhs = "<C-q>", desc = "Close review tab" },
+          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
+          submit_review = { lhs = "<leader>vs", desc = "submit review" },
+          discard_review = { lhs = "<leader>vd", desc = "discard review" },
+          add_comment = { lhs = "<leader>ca", desc = "add comment" },
+          add_reply = { lhs = "<leader>cr", desc = "add reply" },
+          add_suggestion = { lhs = "<leader>sa", desc = "add suggestion" },
+          delete_comment = { lhs = "<leader>cd", desc = "delete comment" },
 				},
 				file_panel = {
-					close_review_tab = { lhs = "<C-q>", desc = "Close review tab" },
+					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
 				},
 			},
 		},
