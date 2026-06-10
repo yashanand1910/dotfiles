@@ -1,5 +1,5 @@
 # sudo
-alias sudo="sudo -E"
+alias sudo="sudo -i"
 
 # grep
 alias grep="grep -sn --color=auto"

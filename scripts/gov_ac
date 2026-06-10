@@ -1,0 +1,72 @@
+#!/bin/bash
+# Script to update /etc/tlp.conf and set CPU_SCALING_GOVERNOR_ON_AC to specified mode
+
+set -e
+
+TLP_CONF="/etc/tlp.conf"
+
+# Valid governor modes
+VALID_GOVERNORS="performance powersave conservative ondemand userspace schedutil"
+
+# Check if governor argument is provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <governor>"
+    echo "Valid governors: $VALID_GOVERNORS"
+    echo ""
+    echo "Note: Available governors depend on your CPU and driver:"
+    echo "  - Intel (intel_pstate) or AMD (amd-pstate-epp): performance, powersave"
+    echo "  - Intel (intel_cpufreq), AMD (amd-pstate), or acpi-cpufreq: conservative, ondemand, userspace, powersave, performance, schedutil"
+    echo ""
+    echo "Use 'tlp-stat -p' to show active driver and available governors"
+    exit 1
+fi
+
+GOVERNOR="$1"
+
+# Validate governor argument
+if ! echo "$VALID_GOVERNORS" | grep -qw "$GOVERNOR"; then
+    echo "Error: Invalid governor '$GOVERNOR'"
+    echo "Valid governors: $VALID_GOVERNORS"
+    exit 1
+fi
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: This script must be run as root (use sudo)"
+    exit 1
+fi
+
+# Check if tlp.conf exists
+if [ ! -f "$TLP_CONF" ]; then
+    echo "Error: $TLP_CONF not found"
+    exit 1
+fi
+
+# Backup the original file
+echo "Creating backup: ${TLP_CONF}.backup"
+cp "$TLP_CONF" "${TLP_CONF}.backup"
+
+# Update or add CPU_SCALING_GOVERNOR_ON_AC setting
+if grep -q "^CPU_SCALING_GOVERNOR_ON_AC=" "$TLP_CONF"; then
+    # Setting exists and is uncommented - update it
+    sed -i "s/^CPU_SCALING_GOVERNOR_ON_AC=.*/CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR/" "$TLP_CONF"
+    echo "Updated existing CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR"
+elif grep -q "^#CPU_SCALING_GOVERNOR_ON_AC=" "$TLP_CONF"; then
+    # Setting exists but is commented - uncomment and update it
+    sed -i "s/^#CPU_SCALING_GOVERNOR_ON_AC=.*/CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR/" "$TLP_CONF"
+    echo "Uncommented and set CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR"
+else
+    # Setting doesn't exist - add it after the CPU governor comment section
+    sed -i "/^# Default: <none>$/a CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR" "$TLP_CONF"
+    echo "Added CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR"
+fi
+
+# Verify the change
+if grep -q "^CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR" "$TLP_CONF"; then
+    echo "✓ Successfully set CPU_SCALING_GOVERNOR_ON_AC=$GOVERNOR"
+else
+    echo "✗ Failed to update configuration"
+    exit 1
+fi
+
+tlp start # apply changes
