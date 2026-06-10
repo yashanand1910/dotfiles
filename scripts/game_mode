@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Game mode script - toggles performance settings
+# Usage: game_mode [on|off|true|false]
+
+if [ $# -eq 0 ]; then
+    echo "Usage: game_mode [on|off|true|false]"
+    exit 1
+fi
+
+# Convert argument to lowercase
+arg=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+
+case "$arg" in
+    on|true)
+        echo "Enabling game mode..."
+        sudo -i gov_ac performance
+        hyprmod SUPER
+        echo "Game mode enabled: performance governor, SUPER mod key"
+        ;;
+    off|false)
+        echo "Disabling game mode..."
+        sudo -i gov_ac schedutil
+        hyprmod ALT
+        echo "Game mode disabled: schedutil governor, ALT mod key"
+        ;;
+    *)
+        echo "Invalid argument: $1"
+        echo "Usage: game_mode [on|off|true|false]"
+        exit 1
+        ;;
+esac
