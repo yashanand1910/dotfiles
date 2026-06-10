@@ -18,21 +18,6 @@ end
 
 -- Adapter configurations
 
-local function load_launchjs()
-	require("dap.ext.vscode").load_launchjs(".vscode/launch.json", {
-		chrome = { "typescript", "javascript", "typescriptreact" },
-		codelldb = { "c", "cpp", "rust" },
-		cppdbg = { "c", "cpp" },
-		ocamlearlybird = { "ocaml" },
-		go = { "go" },
-		debugpy = { "python" },
-	})
-end
-
-pcall(load_launchjs) -- XXX: ignore errors for now
-
--- Load vscode launch.json configs
-
 dap.adapters.debugpy = {
 	type = "executable",
 	command = "python3",

@@ -16,8 +16,8 @@ local function get_project_root()
 end
 
 avante.setup({
-	mode = "agentic",
 	provider = "claude-code",
+	mode = "agentic",
 	behaviour = {
 		enable_fastapply = true, -- Enable Fast Apply feature
 	},

@@ -1,3 +1,3 @@
 #!/bin/bash
 set -eux
-efibootmgr -c -d /dev/nvme0n1 -p 1 -L "Gentoo" -l "\EFI\Linux\kernel.efi" -u "root=UUID=1b20a33a-8828-4ad2-9603-4143d27d77ca initrd=\EFI\Linux\initramfs.img net.ifnames=0"
+efibootmgr -c -d /dev/nvme0n1 -p 1 -L "Gentoo" -l "\EFI\Linux\kernel.efi" -u "root=UUID=eec65254-5885-4bef-97ab-f8727997dc97 initrd=\EFI\Linux\initramfs.img net.ifnames=0"

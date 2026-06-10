@@ -129,7 +129,6 @@ local plugins = {
 	-- File, search
 	{
 		"nvim-treesitter/nvim-treesitter",
-		commit = "42fc28b", -- TODO: Revert latest once stable
 		lazy = false,
 		build = ":TSUpdate",
 	}, --> Incremental highlighting
@@ -168,6 +167,7 @@ local plugins = {
 	"tpope/vim-rhubarb", --> Enables :Gbrowse
 	{
 		"pwntester/octo.nvim", --> GitHub integration
+		version = "34e67cc2d247e9b9271e2b54baeb6d4f6d1035bb", -- TODO: revert when main is fixed (by those morons)
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope.nvim",
@@ -177,37 +177,37 @@ local plugins = {
 			suppress_missing_scope = {
 				projects_v2 = true,
 			},
-      picker_config = {
-        mappings = {
-          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
-          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
-        },
-      },
+			picker_config = {
+				mappings = {
+					copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+					copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+				},
+			},
 			mappings = {
-        pull_request = {
-          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
-          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
-          checkout_pr = { lhs = "<leader>opp", desc = "checkout PR" },
-          add_reviewer = { lhs = "<leader>va", desc = "add reviewer" },
-          remove_reviewer = { lhs = "<leader>vd", desc = "remove reviewer request" },
-          review_start = { lhs = "<leader>vs", desc = "start a review for the current PR" },
-          review_resume = { lhs = "<leader>vr", desc = "resume a pending review for the current PR" },
-        },
+				pull_request = {
+					copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+					copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+					checkout_pr = { lhs = "<leader>opp", desc = "checkout PR" },
+					add_reviewer = { lhs = "<leader>va", desc = "add reviewer" },
+					remove_reviewer = { lhs = "<leader>vd", desc = "remove reviewer request" },
+					review_start = { lhs = "<leader>vs", desc = "start a review for the current PR" },
+					review_resume = { lhs = "<leader>vr", desc = "resume a pending review for the current PR" },
+				},
 				review_thread = {
-          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
-          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+					copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+					copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
 					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
 				},
 				review_diff = {
-          copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
-          copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
+					copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
+					copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
 					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
-          submit_review = { lhs = "<leader>vs", desc = "submit review" },
-          discard_review = { lhs = "<leader>vd", desc = "discard review" },
-          add_comment = { lhs = "<leader>ca", desc = "add comment" },
-          add_reply = { lhs = "<leader>cr", desc = "add reply" },
-          add_suggestion = { lhs = "<leader>sa", desc = "add suggestion" },
-          delete_comment = { lhs = "<leader>cd", desc = "delete comment" },
+					submit_review = { lhs = "<leader>vs", desc = "submit review" },
+					discard_review = { lhs = "<leader>vd", desc = "discard review" },
+					add_comment = { lhs = "<leader>ca", desc = "add comment" },
+					add_reply = { lhs = "<leader>cr", desc = "add reply" },
+					add_suggestion = { lhs = "<leader>sa", desc = "add suggestion" },
+					delete_comment = { lhs = "<leader>cd", desc = "delete comment" },
 				},
 				file_panel = {
 					close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
@@ -306,7 +306,7 @@ local plugins = {
 		"yetone/avante.nvim",
 		build = "make",
 		event = "VeryLazy",
-		version = false, -- Never set this value to "*"! Never!
+		version = "v0.0.29", -- Never set this value to "*"! Never!
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
