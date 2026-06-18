@@ -18,7 +18,7 @@ alias la="ll -a"
 # vim
 alias vi=nvim
 alias vim=vi
-alias svi="sudo -E nvim"
+alias svi="/bin/sudo -E nvim"
 alias svim=svi
 
 # python

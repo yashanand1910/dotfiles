@@ -1,0 +1,69 @@
+#!/bin/bash
+# Script to update /etc/tlp.conf and set PLATFORM_PROFILE_ON_AC to specified profile
+
+set -e
+
+TLP_CONF="/etc/tlp.conf"
+
+# Valid platform profiles
+VALID_PROFILES="performance balanced low-power"
+
+# Check if profile argument is provided
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <profile>"
+    echo "Valid profiles: $VALID_PROFILES"
+    echo ""
+    echo "Note: Available profiles depend on your hardware and platform driver"
+    echo "Use 'tlp-stat -p' to show active driver and available platform profiles"
+    exit 1
+fi
+
+PROFILE="$1"
+
+# Validate profile argument
+if ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
+    echo "Error: Invalid profile '$PROFILE'"
+    echo "Valid profiles: $VALID_PROFILES"
+    exit 1
+fi
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: This script must be run as root (use sudo)"
+    exit 1
+fi
+
+# Check if tlp.conf exists
+if [ ! -f "$TLP_CONF" ]; then
+    echo "Error: $TLP_CONF not found"
+    exit 1
+fi
+
+# Backup the original file
+echo "Creating backup: ${TLP_CONF}.backup"
+cp "$TLP_CONF" "${TLP_CONF}.backup"
+
+# Update or add PLATFORM_PROFILE_ON_AC setting
+if grep -q "^PLATFORM_PROFILE_ON_AC=" "$TLP_CONF"; then
+    # Setting exists and is uncommented - update it
+    sed -i "s/^PLATFORM_PROFILE_ON_AC=.*/PLATFORM_PROFILE_ON_AC=$PROFILE/" "$TLP_CONF"
+    echo "Updated existing PLATFORM_PROFILE_ON_AC=$PROFILE"
+elif grep -q "^#PLATFORM_PROFILE_ON_AC=" "$TLP_CONF"; then
+    # Setting exists but is commented - uncomment and update it
+    sed -i "s/^#PLATFORM_PROFILE_ON_AC=.*/PLATFORM_PROFILE_ON_AC=$PROFILE/" "$TLP_CONF"
+    echo "Uncommented and set PLATFORM_PROFILE_ON_AC=$PROFILE"
+else
+    # Setting doesn't exist - add it
+    echo "PLATFORM_PROFILE_ON_AC=$PROFILE" >> "$TLP_CONF"
+    echo "Added PLATFORM_PROFILE_ON_AC=$PROFILE"
+fi
+
+# Verify the change
+if grep -q "^PLATFORM_PROFILE_ON_AC=$PROFILE" "$TLP_CONF"; then
+    echo "✓ Successfully set PLATFORM_PROFILE_ON_AC=$PROFILE"
+else
+    echo "✗ Failed to update configuration"
+    exit 1
+fi
+
+tlp start # apply changes
