@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Script to set CPU frequency scaling governor for all CPUs
+# Usage: gov <governor_name>
+
+set -e
+
+if [ $# -ne 1 ]; then
+    echo "Error: Missing required argument" >&2
+    echo "Usage: $0 <governor_name>" >&2
+    exit 1
+fi
+
+REQUESTED_GOVERNOR="$1"
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: This script must be run as root" >&2
+    exit 1
+fi
+
+# Get the first CPU's available governors (they should be the same for all CPUs)
+AVAILABLE_GOVERNORS_FILE="/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors"
+
+if [ ! -f "$AVAILABLE_GOVERNORS_FILE" ]; then
+    echo "Error: Cannot find available governors file at $AVAILABLE_GOVERNORS_FILE" >&2
+    echo "cpufreq may not be supported on this system" >&2
+    exit 1
+fi
+
+AVAILABLE_GOVERNORS=$(cat "$AVAILABLE_GOVERNORS_FILE")
+
+# Validate that the requested governor is available
+if ! echo "$AVAILABLE_GOVERNORS" | grep -qw "$REQUESTED_GOVERNOR"; then
+    echo "Error: '$REQUESTED_GOVERNOR' is not an available governor" >&2
+    echo "Available governors: $AVAILABLE_GOVERNORS" >&2
+    exit 1
+fi
+
+# Apply the governor to all CPUs
+SUCCESS_COUNT=0
+FAIL_COUNT=0
+
+for governor_file in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+    if [ -f "$governor_file" ]; then
+        CPU_NUM=$(echo "$governor_file" | grep -o 'cpu[0-9]*' | head -1)
+        if echo "$REQUESTED_GOVERNOR" > "$governor_file" 2>/dev/null; then
+            SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+        else
+            echo "Warning: Failed to set governor for $CPU_NUM" >&2
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+        fi
+    fi
+done
+
+if [ $SUCCESS_COUNT -eq 0 ]; then
+    echo "Error: Failed to set governor for any CPU" >&2
+    exit 1
+fi
+
+echo "Successfully set governor to '$REQUESTED_GOVERNOR' for $SUCCESS_COUNT CPU(s)"
+
+if [ $FAIL_COUNT -gt 0 ]; then
+    echo "Warning: Failed to set governor for $FAIL_COUNT CPU(s)" >&2
+    exit 1
+fi
+
+exit 0

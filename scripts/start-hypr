@@ -1,6 +1,0 @@
-#!/bin/sh
-cd ~ || exit
-export XDG_RUNTIME_DIR="/tmp/hyprland"
-mkdir -p $XDG_RUNTIME_DIR
-chmod 0700 $XDG_RUNTIME_DIR
-dbus-run-session Hyprland
