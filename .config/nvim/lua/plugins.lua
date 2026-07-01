@@ -216,6 +216,12 @@ local plugins = {
 		},
 	},
 	{
+		"topaxi/pipeline.nvim",
+		-- optional, you can also install and use `yq` instead.
+		build = "make",
+		opts = {},
+	},
+	{
 		"ruifm/gitlinker.nvim",
 		dependencies = "nvim-lua/plenary.nvim",
 		config = true,
