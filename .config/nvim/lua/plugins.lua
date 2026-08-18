@@ -167,7 +167,6 @@ local plugins = {
 	"tpope/vim-rhubarb", --> Enables :Gbrowse
 	{
 		"pwntester/octo.nvim", --> GitHub integration
-		version = "34e67cc2d247e9b9271e2b54baeb6d4f6d1035bb", -- TODO: revert when main is fixed (by those morons)
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-telescope/telescope.nvim",
@@ -312,7 +311,6 @@ local plugins = {
 		"yetone/avante.nvim",
 		build = "make",
 		event = "VeryLazy",
-		version = "v0.0.29", -- Never set this value to "*"! Never!
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",

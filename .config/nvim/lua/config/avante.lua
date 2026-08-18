@@ -24,7 +24,7 @@ avante.setup({
 	providers = {
 		claude = {
 			endpoint = "https://api.anthropic.com",
-			model = "claude-sonnet-4-5-20250929",
+			model = "claude-opus-5",
 			timeout = 30000, -- Timeout in milliseconds
 			extra_request_body = {
 				temperature = 1,
@@ -59,7 +59,7 @@ avante.setup({
 		},
 		["claude-code"] = {
 			command = "npx",
-			args = { "-y", "@zed-industries/claude-code-acp" },
+			args = { "-y", "@agentclientprotocol/claude-agent-acp" },
 			env = {
 				NODE_NO_WARNINGS = "1",
 				ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
