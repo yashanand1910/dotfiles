@@ -30,6 +30,9 @@ require("noice").setup({
 	messages = {
 		enabled = true,
 	},
+	popupmenu = {
+		enabled = true,
+	},
 	routes = {
 		{
 			-- XXX: filter write messages (see https://github.com/folke/noice.nvim/issues/568)
