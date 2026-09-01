@@ -69,7 +69,19 @@ local plugins = {
 		},
 	},
 	"projekt0n/github-nvim-theme",
-	"xiyaowong/transparent.nvim",
+	{
+		"xiyaowong/transparent.nvim",
+		opts = {
+			extra_groups = {
+				-- Avante sidebar and input popup
+				"AvanteSidebarNormal",
+				"AvanteSidebarWinSeparator",
+				"AvanteSidebarWinHorizontalSeparator",
+				-- "AvantePromptInput",
+				-- "AvantePromptInputBorder",
+			},
+		},
+	},
 	-- ANSI colorizer for text (used for DAP console filetype)
 	{
 		"m00qek/baleia.nvim",
@@ -246,9 +258,9 @@ local plugins = {
 		-- Make sure to set this up properly if you have lazy=true
 		"MeanderingProgrammer/render-markdown.nvim",
 		opts = {
-			file_types = { "markdown", "Avante", "octo" },
+			file_types = { "markdown", "Avante", "AvanteInput", "octo", "gitcommit" },
 		},
-		ft = { "markdown", "Avante", "octo" },
+		ft = { "markdown", "Avante", "AvanteInput", "octo", "gitcommit" },
 	},
 
 	{

@@ -5,10 +5,10 @@
 local avante = require("avante")
 
 avante.setup({
+	debug = false,
+	log_level = "info",
 	mode = "agentic",
 	provider = "claude-code",
-	auto_suggestions_provider = nil,
-	memory_summary_provider = nil,
 	tokenizer = "tiktoken",
 	system_prompt = nil,
 	override_prompt_dir = nil,
@@ -159,6 +159,25 @@ avante.setup({
 			code = "c",
 			resp = "r",
 			input = "i",
+		},
+	},
+	prompt_logger = { -- logs prompts to disk (timestamped, for replay/debugging)
+		enabled = true, -- toggle logging entirely
+		log_dir = vim.fn.stdpath("cache"), -- directory where logs are saved
+		max_entries = 100, -- the uplimit of entries that can be sotred
+		next_prompt = {
+			normal = "<C-n>", -- load the next (newer) prompt log in normal mode
+			insert = "<C-n>",
+		},
+		prev_prompt = {
+			normal = "<C-p>", -- load the previous (older) prompt log in normal mode
+			insert = "<C-p>",
+		},
+	},
+	windows = {
+		input = {
+			prefix = "",
+			height = 24,
 		},
 	},
 })
