@@ -26,7 +26,7 @@ ZSH_THEME="nicoulaj"
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
-zstyle ':omz:update' mode auto  # just remind me to update when it's time
+zstyle ':omz:update' mode auto  # update automatically without asking
 
 # Uncomment the following line to change how often to auto-update (in days).
 # zstyle ':omz:update' frequency 13
@@ -91,12 +91,10 @@ plugins=(
     git
     fzf
     zsh-autosuggestions
-    zsh-copilot
+    zsh-claude-code
 )
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-
-export FZF_BASE=~/.fzf.zsh
 
 source "$ZSH"/oh-my-zsh.sh
 
@@ -130,10 +128,6 @@ export EDITOR='nvim'
 # ref: https://stackoverflow.com/questions/57591432/gpg-signing-failed-inappropriate-ioctl-for-device-on-macos-with-maven
 export GPG_TTY=$(tty)
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 # Start tmux if not already
 # if [ -z "$TMUX" ]; then
 #     tmux new-session -A
@@ -146,8 +140,6 @@ if [[  "$(uname)" == "Linux" ]]; then
     PATH="$PATH:/usr/sbin:/sbin"
     export PATH
     # Lima END
-    # opam configuration
-    [[ ! -r /home/yashanand.linux/.opam/opam-init/init.zsh ]] || source /home/yashanand.linux/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
 
     # Start display server
     # if [[ -z "$DISPLAY" ]] && [[ $(tty) = /dev/tty1 ]]; then

@@ -1,4 +1,5 @@
 # sudo
+alias sudo='sudo -A' # sudo only uses askpass with -A or when tty-less
 alias se="sudo -E"
 alias si="sudo -i"
 

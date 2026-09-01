@@ -11,5 +11,7 @@ do
 end
 
 do
-	vim.api.nvim_create_user_command("Browse", "silent exec '!open <args>'", { nargs = 1 })
+	vim.api.nvim_create_user_command("Browse", function(opts)
+		vim.ui.open(opts.args)
+	end, { nargs = 1 })
 end

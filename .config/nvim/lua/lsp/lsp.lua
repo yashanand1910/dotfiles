@@ -10,7 +10,6 @@ end
 --[[ set_diagnostics_config()
 -- Initialize Vim diagnostics settings
 --]]
----@diagnostic disable-next-line: unused-local, unused-function
 local function set_diagnostics_config()
 	vim.diagnostic.config({
 		float = {
@@ -27,6 +26,8 @@ local function set_diagnostics_config()
 		},
 	})
 end
+
+set_diagnostics_config()
 
 -- List of LSP servers used later
 -- Always check the memory usage of each language server. :LSpInfo to identify LSP server
@@ -52,14 +53,12 @@ mason_lspconfig.setup({
 
 config("clangd", {
 	capabilities = cmp_capability,
-	on_attach = on_attach,
 	filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
 	init_options = { clangdFileStatus = true },
 })
 
 config("lua_ls", {
 	capabilities = cmp_capability,
-	on_attach = on_attach,
 	settings = {
 		-- https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/lua.template.editorconfig
 		Lua = {
@@ -67,7 +66,7 @@ config("lua_ls", {
 				enable = false,
 			},
 			diagnostics = {
-				globals = { "vim", "on_attach" }, --> Make diagnostics tolerate vim.fun.stuff
+				globals = { "vim" }, --> Make diagnostics tolerate vim.fun.stuff
 			},
 			workspace = {
 				library = vim.api.nvim_get_runtime_file("lua", true), --> Expose some Neovim API
@@ -82,7 +81,6 @@ config("lua_ls", {
 
 config("docker_compose_language_service", {
 	capabilities = cmp_capability,
-	on_attach = on_attach,
 })
 
 config("pylsp", {

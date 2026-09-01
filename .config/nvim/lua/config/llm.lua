@@ -3,19 +3,19 @@
 --]]
 
 local model = "GPT 4.1"
-local modelCode = "gpt-4.1"
+local modelCode = "openai/gpt-4.1"
 
 local Text = require("nui.text")
 local llm = require("llm")
 local tools = require("llm.tools")
 llm.setup({
-	url = "https://models.inference.ai.azure.com/chat/completions",
+	url = "https://models.github.ai/inference/chat/completions",
 	model = modelCode,
 	api_type = "openai",
 	prompt = "You are an elite programmer. You are very concise and to the point.",
 
 	save_session = true,
-	max_history = 15,
+	max_history_files = 15,
 	max_history_name_length = 20,
 	fetch_key = function()
 		return vim.env.GITHUB_KEY
@@ -33,7 +33,6 @@ llm.setup({
 		-- only works when "save_session = true"
 		["Input:HistoryNext"] = { mode = { "n", "i" }, key = "<C-n>" },
 		["Input:HistoryPrev"] = { mode = { "n", "i" }, key = "<C-p>" },
-		["Input:HistoryDelete"] = { mode = { "n", "i" }, key = "<C-x>" },
 
 		-- The keyboard mapping for the output and input windows in "float" style.
 		["Session:Toggle"] = { mode = "n", key = "<leader>ac" },

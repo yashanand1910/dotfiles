@@ -77,8 +77,8 @@ M.spawn_floating_term = function()
 		local win = vim.api.nvim_open_win(buf, true, win_opts)
 
 		-- options
-		vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe") --> Kill the buffer when hidden
-		vim.api.nvim_win_set_option(win, "winblend", 24) --> 0 for solid color, 80 for transparent
+		vim.bo[buf].bufhidden = "wipe" --> Kill the buffer when hidden
+		vim.wo[win].winblend = 24 --> 0 for solid color, 80 for transparent
 
 		-- keymap
 		local keymaps_opts = { silent = true, buffer = buf }
@@ -134,9 +134,9 @@ M.spawn_floating_shell = function(cmd, height_ratio, width_ratio, pos, transpare
 		local win = vim.api.nvim_open_win(buf, true, win_opts)
 
 		-- options
-		vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe") --> Kill the buffer when hidden
-		vim.api.nvim_win_set_option(win, "winblend", transparency) --> 0 for solid color, 80 for transparent
-		vim.api.nvim_buf_set_option(0, "modifiable", false)
+		vim.bo[buf].bufhidden = "wipe" --> Kill the buffer when hidden
+		vim.wo[win].winblend = transparency --> 0 for solid color, 80 for transparent
+		vim.bo[0].modifiable = false
 
 		-- keymaps
 		local keymaps_opts = { silent = true, buffer = buf }
@@ -153,7 +153,7 @@ M.spawn_floating_shell = function(cmd, height_ratio, width_ratio, pos, transpare
 		end, keymaps_opts)
 
 		-- Executing commands
-		vim.fn.termopen(cmd)
+		vim.fn.jobstart(cmd, { term = true })
 	end
 	return float_shell
 end
@@ -191,10 +191,10 @@ M.spawn_floting_doc_win = function(file_path)
 		local win = vim.api.nvim_open_win(buf, true, win_opts)
 
 		-- options
-		vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe") --> Kill the buffer when hidden
-		vim.api.nvim_buf_set_option(buf, "filetype", "markdown") --> Markdown syntax highlighting
+		vim.bo[buf].bufhidden = "wipe" --> Kill the buffer when hidden
+		vim.bo[buf].filetype = "markdown" --> Markdown syntax highlighting
 		vim.opt_local.spell = false --> Diable spell check, spell is win option
-		vim.api.nvim_win_set_option(win, "winblend", 24) --> 0 for solid color, 80 for transparent
+		vim.wo[win].winblend = 24 --> 0 for solid color, 80 for transparent
 
 		-- keymaps
 		local keymaps_opts = { silent = true, buffer = buf }
@@ -204,9 +204,9 @@ M.spawn_floting_doc_win = function(file_path)
 		end, keymaps_opts)
 
 		-- Reading the file
-		vim.api.nvim_buf_set_option(0, "modifiable", true)
+		vim.bo[0].modifiable = true
 		vim.cmd("silent 0r" .. file_path)
-		vim.api.nvim_buf_set_option(0, "modifiable", false)
+		vim.bo[0].modifiable = false
 	end
 	return float_win
 end
@@ -226,7 +226,7 @@ function M.launch_notepad()
 			vim.api.nvim_buf_call(M.notepad_buf, function()
 				vim.cmd("edit " .. NOTES_FILENAME)
 			end)
-			vim.api.nvim_buf_set_option(M.notepad_buf, "buflisted", false)
+			vim.bo[M.notepad_buf].buflisted = false
 			vim.api.nvim_buf_call(M.notepad_buf, function()
 				vim.cmd("set wrap")
 			end)
@@ -240,8 +240,8 @@ function M.launch_notepad()
 			row = 1, --> Top of the window
 			col = math.ceil(vim.o.columns * 0.5), --> Far right; should add up to 1 with win_width
 		})
-		vim.api.nvim_win_set_option(M.notepad_win, "winblend", 20) --> Semi transparent buffer
-		vim.api.nvim_win_set_option(M.notepad_win, "spell", true) --> Workaround to set spell option
+		vim.wo[M.notepad_win].winblend = 20 --> Semi transparent buffer
+		vim.wo[M.notepad_win].spell = true --> Workaround to set spell option
 		vim.g.spellcheck_status = true
 
 		-- Keymaps

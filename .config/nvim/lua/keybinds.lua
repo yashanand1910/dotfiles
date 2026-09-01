@@ -566,7 +566,7 @@ local key_opt = {
 		"n",
 		"<leader>lj",
 		function()
-			vim.diagnostic.goto_next()
+			vim.diagnostic.jump({ count = 1, float = true })
 		end,
 		"Jump to next diagnostic",
 	},
@@ -574,7 +574,7 @@ local key_opt = {
 		"n",
 		"<leader>lk",
 		function()
-			vim.diagnostic.goto_prev()
+			vim.diagnostic.jump({ count = -1, float = true })
 		end,
 		"Jump to prev diagnostic",
 	},
@@ -712,14 +712,10 @@ local key_opt = {
 		"v",
 		"<leader>aa",
 		function()
-			local selected_text = vim.fn.getreg("v") -- get visually selected text
-			if selected_text then
-				require("avante.api").ask({
-					floating = false,
-				})
-			else
-				print("No text selected.")
-			end
+			-- avante.api.ask picks up the visual selection itself
+			require("avante.api").ask({
+				floating = false,
+			})
 		end,
 		"Avante ask",
 	},
@@ -727,15 +723,11 @@ local key_opt = {
 		"v",
 		"<leader>an",
 		function()
-			local selected_text = vim.fn.getreg("v") -- get visually selected text
-			if selected_text then
-				require("avante.api").ask({
-					floating = false,
-					new_chat = true,
-				})
-			else
-				print("No text selected.")
-			end
+			-- avante.api.ask picks up the visual selection itself
+			require("avante.api").ask({
+				floating = false,
+				new_chat = true,
+			})
 		end,
 		"Avante ask (new)",
 	},

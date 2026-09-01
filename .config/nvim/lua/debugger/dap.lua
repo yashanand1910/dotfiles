@@ -55,7 +55,7 @@ dap.adapters.chrome = {
 	type = "executable",
 	command = "node",
 	args = {
-		vim.fn.expand("$MASON/bin/chrome-debug-adapter") .. "/out/src/chromeDebug.js",
+		vim.fn.expand("$MASON/packages/chrome-debug-adapter") .. "/out/src/chromeDebug.js",
 	},
 }
 
@@ -65,7 +65,7 @@ dap.adapters.codelldb = {
 	type = "server",
 	port = "13000",
 	executable = {
-		command = vim.fn.expand("$MASON/bin/codelldb") .. "/extension/adapter/codelldb",
+		command = vim.fn.expand("$MASON/packages/codelldb") .. "/extension/adapter/codelldb",
 		args = { "--port", "13000" },
 	},
 	name = "codelldb",
@@ -74,13 +74,9 @@ dap.adapters.codelldb = {
 dap.adapters.cppdbg = {
 	id = "cppdbg",
 	type = "executable",
-	command = vim.fn.expand("$MASON/bin/cpptools") .. "/extension/debugAdapters/bin/OpenDebugAD7",
+	command = vim.fn.expand("$MASON/packages/cpptools") .. "/extension/debugAdapters/bin/OpenDebugAD7",
 }
-dap.adapters.rust = {
-	id = "cppdbg",
-	type = "executable",
-	command = vim.fn.expand("$MASON/bin/cpptools"),
-}
+dap.adapters.rust = dap.adapters.cppdbg
 
 -- FIXME: ocaml debugger / doesn't work
 

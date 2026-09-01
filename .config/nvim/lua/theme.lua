@@ -20,10 +20,10 @@ endtry
 
 -- Brighten line numbers for Tokyonight
 
-local colors = require("tokyonight.colors")
-if vim.g.colors_name == "tokyonight" then
+if (vim.g.colors_name or ""):match("^tokyonight") then
+	local colors = require("tokyonight.colors").setup()
 	-- Set bright colors for Comments
-	vim.api.nvim_set_hl(0, "Comment", { fg = colors.default.dark5, italic = true })
+	vim.api.nvim_set_hl(0, "Comment", { fg = colors.dark5, italic = true })
 end
 
 -- Notify config

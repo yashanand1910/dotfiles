@@ -108,7 +108,7 @@ end
 -- @return If Gitsigns info is not available, an empty string. Else, "git-branch-name +line-added ~modified -deleted"
 --]]
 M.git_status = function()
-	if not vim.b.gitsigns_head or vim.b.gitsigns_git_status then
+	if not vim.b.gitsigns_head or not vim.b.gitsigns_status_dict then
 		return ""
 	end
 

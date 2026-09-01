@@ -149,13 +149,11 @@ local plugins = {
 	},
 	{
 		"stevearc/oil.nvim", --> Manage files like Vim buffer; currently testing!
-		opts = {},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
 
 	-- Formatting & linting
 	"mfussenegger/nvim-lint",
-	"editorconfig/editorconfig-vim",
 
 	-- Git
 	{
@@ -270,7 +268,7 @@ local plugins = {
 	"tpope/vim-surround",
 	"tpope/vim-commentary", --> Commenting region
 	{
-		"norcalli/nvim-colorizer.lua", --> Color highlighter
+		"catgoose/nvim-colorizer.lua", --> Color highlighter (maintained fork of norcalli/nvim-colorizer.lua)
 		config = true,
 	},
 	{
@@ -304,8 +302,6 @@ local plugins = {
 	{
 		"Kurama622/llm.nvim",
 		dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
-		cmd = { "LLMSessionToggle", "LLMSelectedTextHandler", "LLMAppHandler" },
-		config = true,
 	},
 	{
 		"yetone/avante.nvim",
@@ -319,7 +315,6 @@ local plugins = {
 			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
 			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
 			"ibhagwan/fzf-lua", -- for file_selector provider fzf
-			"stevearc/dressing.nvim", -- for input provider dressing
 			"folke/snacks.nvim", -- for input provider snacks
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 			-- "zbirenbaum/copilot.lua", -- for providers='copilot'
@@ -349,11 +344,11 @@ local plugins = {
 	"stevearc/conform.nvim",
 	"neovim/nvim-lspconfig", --> Neovim default LSP engine
 	{
-		"williamboman/mason.nvim", --> LSP Manager
+		"mason-org/mason.nvim", --> LSP Manager
 		config = true,
 	},
 	{
-		"williamboman/mason-lspconfig.nvim",
+		"mason-org/mason-lspconfig.nvim",
 	}, --> Bridge between Mason and lspconfig
 	{
 		"L3MON4D3/LuaSnip", --> Snippet engine that accepts VS Code style snippets
@@ -423,17 +418,17 @@ local plugins = {
 		config = true,
 	},
 	{
-		"folke/neodev.nvim", --> For configuring lua_ls for nvim config files
+		"folke/lazydev.nvim", --> For configuring lua_ls for nvim config files (successor of neodev.nvim)
+		ft = "lua",
 		opts = {
-			library = { plugins = { "nvim-dap-ui" }, types = true },
+			library = { "nvim-dap-ui" },
 		},
-		config = true,
 	},
 }
 
 --- {{{ Lazy.nvim installation
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+prompt=${1:-Password:}
+
+rbw unlock || exit 1   # no-op if already unlocked
+
+# guess a query from the prompt, e.g. "user@host's password:"
+guess=$(printf '%s' "$prompt" | grep -oE '@[A-Za-z0-9._-]+' | tr -d '@' || true)
+
+line=$(rbw list --fields name,user \
+        | fzf --delimiter='\t' --with-nth=1,2 \
+    --prompt="$prompt " --height=40% --query="${guess:-}")
+
+if [ -z "$line" ]; then
+    # fzf aborted — let me just type it
+    printf '%s' "$prompt" >/dev/tty
+    read -rs pw </dev/tty; printf '\n' >/dev/tty
+    printf '%s\n' "$pw"; exit 0
+fi
+
+rbw get "$(cut -f1 <<<"$line")" "$(cut -f2 <<<"$line")"

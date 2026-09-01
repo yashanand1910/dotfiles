@@ -12,8 +12,6 @@ opt.formatoptions:remove("t") -- Disable auto-wrapping of comments using textwid
 
 do
 	local base_opt = {
-		{ "filetype", "on" }, --> Detect the type of the file that is edited
-		{ "syntax", "on" }, --> Turn the default highlighting on, overriden by Treesitter in supported buffers
 		{ "confirm", true }, --> Confirm before exiting with unsaved bufffer(s)
 		{ "autochdir", false }, --> When on, Vim will change the CWD whenever you open a file, switch buffers ,etc.
 		{ "scrolloff", 7 }, --> Keep minimum x number of screen lines above and below the cursor
@@ -44,7 +42,7 @@ do
 		{ "undofile", true }, --> Persistent undo
 	}
 	-- Folding using TreeSitter --
-	opt.foldexpr = "nvim_treesitter#foldexpr()"
+	opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 	for _, v in ipairs(base_opt) do
 		opt[v[1]] = v[2]
 	end
@@ -137,7 +135,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
 	pattern = "*",
 	callback = function()
-		vim.highlight.on_yank()
+		vim.hl.on_yank()
 	end,
 })
 -- }}}

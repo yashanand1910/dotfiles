@@ -4,22 +4,42 @@
 
 local avante = require("avante")
 
--- Function to find the project root directory
-local function get_project_root()
-	-- Try to find git root
-	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
-	if vim.v.shell_error == 0 and git_root ~= "" then
-		return git_root
-	end
-	-- Fall back to current working directory
-	return vim.fn.getcwd()
-end
-
 avante.setup({
-	provider = "claude-code",
 	mode = "agentic",
+	provider = "claude-code",
+	auto_suggestions_provider = nil,
+	memory_summary_provider = nil,
+	tokenizer = "tiktoken",
+	system_prompt = nil,
+	override_prompt_dir = nil,
+	rules = {
+		project_dir = nil, ---@type string | nil (could be relative dirpath)
+		global_dir = os.getenv("HOME") .. "/code", ---@type string | nil (could be relative dirpath)
+	},
 	behaviour = {
 		enable_fastapply = true, -- Enable Fast Apply feature
+	},
+	rag_service = { -- RAG Service configuration
+		enabled = true, -- Enables the RAG service
+		host_mount = os.getenv("HOME") .. "/code", -- Host directory to mount into the RAG service container
+		runner = "docker", -- Runner for the RAG service (can use docker or nix)
+		llm = { -- Language Model (LLM) configuration for RAG service
+			provider = "openai", -- LLM provider
+			endpoint = "https://api.openai.com/v1", -- LLM API endpoint
+			api_key = "OPENAI_API_KEY", -- Environment variable name for the LLM API key
+			model = "gpt-5.6-luna", -- LLM model name
+			extra = nil,
+		},
+		embed = { -- Embedding model configuration for RAG service
+			provider = "openai", -- Embedding provider
+			endpoint = "https://api.openai.com/v1", -- Embedding API endpoint
+			api_key = "OPENAI_API_KEY", -- Environment variable name for the embedding API key
+			model = "text-embedding-3-large", -- Embedding model name
+			extra = { -- Extra configuration options for the Embedding model (optional)
+				max_embedding_tokens = 512, -- Maximum tokens per chunk sent to the embedding model
+			},
+		},
+		docker_extra_args = "", -- Extra arguments to pass to the docker command
 	},
 	providers = {
 		claude = {
@@ -62,52 +82,10 @@ avante.setup({
 			args = { "-y", "@agentclientprotocol/claude-agent-acp" },
 			env = {
 				NODE_NO_WARNINGS = "1",
-				ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
-				ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
+				-- ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
+				-- ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
 				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
 				ACP_PERMISSION_MODE = "bypassPermissions",
-			},
-		},
-	},
-	rag_service = { -- RAG Service configuration
-		enabled = true, -- Enables the RAG service
-		host_mount = get_project_root(), -- Host mount path for the rag service (Docker will mount this path)
-		runner = "docker", -- Runner for the RAG service (can use docker or nix)
-		llm = { -- Language Model (LLM) configuration for RAG service
-			provider = "openai", -- LLM provider
-			endpoint = "https://api.openai.com/v1", -- LLM API endpoint
-			api_key = "OPENAI_API_KEY", -- Environment variable name for the LLM API key
-			model = "gpt-5-mini", -- LLM model name
-			extra = { -- Extra configuration options for the LLM (optional)
-				temperature = 0.7, -- Controls the randomness of the output. Lower values make it more deterministic.
-				max_tokens = 512, -- The maximum number of tokens to generate in the completion.
-				-- system_prompt = "You are a helpful assistant.", -- A system prompt to guide the model's behavior.
-				-- timeout = 120, -- Request timeout in seconds.
-			},
-		},
-		embed = { -- Embedding model configuration for RAG service
-			provider = "openai", -- Embedding provider
-			endpoint = "https://api.openai.com/v1", -- Embedding API endpoint
-			api_key = "OPENAI_API_KEY", -- Environment variable name for the embedding API key
-			model = "text-embedding-3-large", -- Embedding model name
-			extra = { -- Extra configuration options for the Embedding model (optional)
-				dimensions = nil,
-			},
-		},
-		docker_extra_args = "", -- Extra arguments to pass to the docker command
-	},
-	web_search_engine = {
-		provider = "tavily",
-		proxy = nil,
-		providers = {
-			tavily = {
-				api_key_name = "TAVILY_API_KEY",
-				extra_request_body = {
-					include_answer = "basic",
-				},
-				format_response_body = function(body)
-					return body.answer, nil
-				end,
 			},
 		},
 	},

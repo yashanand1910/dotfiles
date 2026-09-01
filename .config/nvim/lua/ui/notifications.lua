@@ -27,9 +27,6 @@ require("noice").setup({
 	cmdline = {
 		view = "cmdline",
 	},
-	popupmenu = {
-		view = "popupmenu",
-	},
 	messages = {
 		enabled = true,
 	},
