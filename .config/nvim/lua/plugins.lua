@@ -300,10 +300,6 @@ local plugins = {
 		},
 	},
 	{
-		"Kurama622/llm.nvim",
-		dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
-	},
-	{
 		"yetone/avante.nvim",
 		build = "make",
 		event = "VeryLazy",

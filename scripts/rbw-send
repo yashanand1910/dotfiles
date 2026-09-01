@@ -4,5 +4,5 @@ pane=$1
 rbw unlock || exit 1
 line=$(rbw list --fields name,user | fzf --delimiter='\t' --with-nth=1,2) || exit 0
 rbw get "$(cut -f1 <<<"$line")" "$(cut -f2 <<<"$line")" \
-    | tr -d '\n' | tmux load-buffer -b rbw -
+    | tmux load-buffer -b rbw -
 tmux paste-buffer -b rbw -d -t "$pane"

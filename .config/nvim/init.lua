@@ -34,7 +34,6 @@ safe_require("lsp.formatter")
 -- Plugin configurations
 safe_require("config.treesitter")
 safe_require("config.oil")
-safe_require("config.llm")
 safe_require("config.avante")
 
 -- Miscellaneous configurations
