@@ -345,10 +345,6 @@ local plugins = {
 	},
 
 	-- LSP
-	{
-		"j-hui/fidget.nvim",
-		config = true,
-	},
 	"stevearc/conform.nvim",
 	"neovim/nvim-lspconfig", --> Neovim default LSP engine
 	{

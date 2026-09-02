@@ -20,7 +20,7 @@ avante.setup({
 		enable_fastapply = true, -- Enable Fast Apply feature
 	},
 	rag_service = { -- RAG Service configuration
-		enabled = true, -- Enables the RAG service
+		enabled = false, -- Enables the RAG service (see https://www.reddit.com/r/AI_Agents/comments/1ij4435/why_shouldnt_use_rag_for_your_ai_agents_and_what/)
 		host_mount = os.getenv("HOME") .. "/code", -- Host directory to mount into the RAG service container
 		runner = "docker", -- Runner for the RAG service (can use docker or nix)
 		llm = { -- Language Model (LLM) configuration for RAG service
@@ -82,8 +82,8 @@ avante.setup({
 			args = { "-y", "@agentclientprotocol/claude-agent-acp" },
 			env = {
 				NODE_NO_WARNINGS = "1",
-				-- ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
-				-- ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
+				ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY_DONT_USE_THIS_KEY"), -- Use claude code that's logged-in
+				ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
 				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
 				ACP_PERMISSION_MODE = "bypassPermissions",
 			},
@@ -177,7 +177,7 @@ avante.setup({
 	windows = {
 		input = {
 			prefix = "",
-			height = 24,
+			height = 16,
 		},
 	},
 })
