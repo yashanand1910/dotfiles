@@ -11,10 +11,26 @@ require("nvim-treesitter").install({
 	"markdown",
 	"markdown_inline",
 	"regex",
+	"yaml",
+	"json",
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "sh", "bash", "python", "go", "c", "cpp", "rust", "markdown", "octo", "Avante", "AvanteInput" },
+	pattern = {
+		"sh",
+		"bash",
+		"python",
+		"go",
+		"c",
+		"cpp",
+		"rust",
+		"markdown",
+		"yaml",
+		"json",
+		"octo",
+		"Avante",
+		"AvanteInput",
+	},
 	callback = function(ev)
 		local max_filesize = 100 * 1024
 		local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(ev.buf))
