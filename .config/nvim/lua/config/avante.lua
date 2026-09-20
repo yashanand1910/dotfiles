@@ -4,17 +4,6 @@
 
 local avante = require("avante")
 
--- Function to find the project root directory
-local function get_project_root()
-	-- Try to find git root
-	local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
-	if vim.v.shell_error == 0 and git_root ~= "" then
-		return git_root
-	end
-	-- Fall back to current working directory
-	return vim.fn.getcwd()
-end
-
 avante.setup({
 	debug = false,
 	log_level = vim.log.levels.WARN,
@@ -24,12 +13,16 @@ avante.setup({
 	system_prompt = nil,
 	override_prompt_dir = nil,
 	rules = {
-		project_dir = get_project_root(), ---@type string | nil (could be relative dirpath)
-		global_dir = os.getenv("HOME") .. "/code", ---@type string | nil (could be relative dirpath)
+		-- These must point at directories containing *.avanterules template files,
+		-- not at the project root itself
+		project_dir = ".avante/rules", -- relative to project root
+		global_dir = os.getenv("HOME") .. "/.config/avante/rules",
 	},
 	behaviour = {
 		auto_focus_sidebar = true,
-		auto_suggestions = true, -- Experimental stage
+		-- Broken with ACP providers: suggestion.lua looks up Providers["claude-code"],
+		-- which doesn't exist as a completion provider, so every insert-mode trigger errors
+		auto_suggestions = false, -- Experimental stage
 		auto_suggestions_respect_ignore = false,
 		auto_set_highlight_group = true,
 		auto_set_keymaps = true,
@@ -44,7 +37,7 @@ avante.setup({
 		auto_approve_tool_permissions = true, -- Default: auto-approve all tools (no prompts)
 		auto_check_diagnostics = true,
 		allow_access_to_git_ignored_files = false,
-		enable_fastapply = true,
+		enable_fastapply = true, -- requires Morph + MORPH_API_KEY
 		include_generated_by_commit_line = false,
 		auto_add_current_file = true,
 		confirmation_ui_style = "inline_buttons",
@@ -113,7 +106,7 @@ avante.setup({
 			args = { "-y", "@agentclientprotocol/claude-agent-acp" },
 			env = {
 				NODE_NO_WARNINGS = "1",
-				-- ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY_DONT_USE_THIS_KEY"), -- Use claude code that's logged-in
+				-- ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"), -- Use claude code that's logged-in
 				-- ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
 				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
 				ACP_PERMISSION_MODE = "bypassPermissions",
@@ -159,7 +152,6 @@ avante.setup({
 		toggle = {
 			default = "<leader>at",
 			debug = "<leader>ad",
-			hint = "<leader>ah",
 			suggestion = "<leader>as",
 			repomap = "<leader>aR",
 		},
