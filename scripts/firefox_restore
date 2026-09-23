@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Launch Firefox and distribute its session-restored windows to workspaces.
+# All Firefox windows share the same class and Firefox's window map order
+# isn't a reliable identity, so each restored window is matched by TITLE
+# against the mapping recorded before the last shutdown — session restore
+# brings back the same active tab per window, so titles line up. Pages are
+# still loading when windows first map (placeholder titles), so matching is
+# retried for SETTLE seconds and late matches get moved to their recorded
+# workspace. Windows that never match fall back to the FALLBACK workspaces
+# not already claimed. After the settle phase the script stays alive,
+# re-recording the live title->workspace mapping every minute so the next
+# boot reproduces whatever arrangement was last on screen.
+#
+# Requires browser.startup.page=3 (set in the profile's user.js) so the
+# session restores without clicking "Restore session".
+
+STATE="$HOME/.local/state/firefox_workspaces"
+FALLBACK=(4 10 9)
+EXPECTED=3  # how many windows to wait for before placing
+TIMEOUT=60  # seconds to wait for windows to appear
+SETTLE=180  # seconds to keep re-matching while page titles settle
+
+mkdir -p "$(dirname "$STATE")"
+
+# On a re-run with Firefox already up, skip the launch (it would open an
+# extra blank window in the running instance) and just re-place windows.
+if ! pgrep -x firefox >/dev/null; then
+  firefox &
+fi
+
+for ((i = 0; i < TIMEOUT * 2; i++)); do
+  count=$(hyprctl clients -j | jq '[.[] | select(.class == "firefox")] | length')
+  [ "$count" -ge "$EXPECTED" ] && break
+  sleep 0.5
+done
+
+firefox_windows() {
+  hyprctl clients -j | jq -r \
+    '.[] | select(.class == "firefox") | [(.workspace.id|tostring), .address, .title] | @tsv'
+}
+
+recorded_ws() { # title -> workspace, empty if not recorded
+  [ -s "$STATE" ] && awk -F'\t' -v t="$1" '$2 == t {print $1; exit}' "$STATE"
+}
+
+# Initial placement: matched windows go to their recorded workspace; the rest
+# take the fallback workspaces nobody claimed (with 1 unmatched window that
+# pins it exactly), in FALLBACK order.
+sleep 3
+declare -A used=()
+declare -A moved=() # windows already sent to their recorded workspace
+unmatched=()
+while IFS=$'\t' read -r _ addr title; do
+  ws=$(recorded_ws "$title")
+  if [ -n "$ws" ]; then
+    hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+    used[$ws]=1
+    moved[$addr]=1
+  else
+    unmatched+=("$addr")
+  fi
+done < <(firefox_windows)
+
+for addr in "${unmatched[@]}"; do
+  ws=${FALLBACK[0]}
+  for f in "${FALLBACK[@]}"; do
+    [ -z "${used[$f]}" ] && ws=$f && break
+  done
+  used[$ws]=1
+  hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+done
+
+# Settle phase: pages retitle as they finish loading, so keep re-matching and
+# move each late-matching window (once) to its recorded workspace. The state
+# file stays untouched until this is over — it is the authority meanwhile.
+for ((t = 0; t < SETTLE; t += 5)); do
+  while IFS=$'\t' read -r cur_ws addr title; do
+    ws=$(recorded_ws "$title")
+    if [ -n "$ws" ] && [ "$ws" != "$cur_ws" ] && [ -z "${moved[$addr]}" ]; then
+      hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+      moved[$addr]=1
+    fi
+  done < <(firefox_windows)
+  sleep 5
+done
+
+# Keep recording the live arrangement for the next boot. The lock makes
+# manual re-runs re-place windows without stacking up extra recorders, and
+# the tmp+mv keeps a reboot mid-write from truncating the mapping.
+exec 9>"$STATE.lock"
+flock -n 9 || exit 0
+while true; do
+  firefox_windows | cut -f1,3 >"$STATE.tmp"
+  # Never record an empty list (Firefox quit/crashed) — it would wipe the
+  # mapping the next boot needs.
+  [ -s "$STATE.tmp" ] && mv "$STATE.tmp" "$STATE"
+  sleep 60
+done

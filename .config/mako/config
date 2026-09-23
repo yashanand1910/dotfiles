@@ -16,3 +16,6 @@ group-by=summary
 
 [grouped]
 format=<b>%s</b> (%g)\n%b
+
+[mode=do-not-disturb]
+invisible=1

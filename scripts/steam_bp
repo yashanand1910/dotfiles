@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Steam Big Picture launcher/stopper for Sunshine (Moonlight streaming).
+# Used by the "Steam" app entry in ~/.config/sunshine/apps.json:
+#   detached:      steam_bp start
+#   prep-cmd undo: steam_bp stop
+# Usage: steam_bp [start|stop]
+
+case "$1" in
+start)
+  if pgrep -x steam >/dev/null; then
+    # Steam is single-instance: tell the running one to open Big Picture
+    steam steam://open/bigpicture >/dev/null 2>&1 &
+  else
+    # Not running: start directly in Big Picture (gamepad UI)
+    setsid steam -gamepadui >/dev/null 2>&1 &
+  fi
+  ;;
+stop)
+  pgrep -x steam >/dev/null || exit 0
+  # -shutdown exits cleanly (finishes cloud sync, saves state); wait for it
+  # so Sunshine doesn't tear down the session while Steam is still closing.
+  steam -shutdown >/dev/null 2>&1
+  for _ in $(seq 1 30); do
+    pgrep -x steam >/dev/null || exit 0
+    sleep 1
+  done
+  echo "steam still running after 30s; not force-killing" >&2
+  exit 1
+  ;;
+*)
+  echo "Usage: steam_bp [start|stop]" >&2
+  exit 1
+  ;;
+esac

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Boot terminals: start the tmux server (which makes tmux-continuum
+# auto-restore the saved environment), wait for the restore to FINISH, then
+# open a kitty per session on its workspace.
+#
+# Waiting for completion matters: resurrect's restore.sh runs switch-client
+# repeatedly while rebuilding sessions, so any client attached mid-restore
+# gets yanked to whatever session is being restored — all kitties end up on
+# the same session. Completion is signalled by @restore_complete, set by the
+# @resurrect-hook-post-restore-all hook in .tmux.conf.
+
+declare -A SESSIONS=(
+  [1]="monitoring 2"
+  [2]="cedana"
+  [3]="monitoring"
+)
+TIMEOUT=90 # seconds to wait for continuum restore to complete
+
+if ! tmux has-session 2>/dev/null; then
+  # A save killed mid-write (e.g. reboot racing a manual save) ends before its
+  # 'window' lines, so restoring it loses every window name and layout. A
+  # complete save always ends with a 'state' line — repoint 'last' at the
+  # newest complete save before the server starts and restores it.
+  # (tab-anchored: a corrupt dump can contain 'state_...' with mangled tabs)
+  RESURRECT_DIR="$HOME/.local/share/tmux/resurrect"
+  state_re="^state$(printf '\t')"
+  if [ -e "$RESURRECT_DIR/last" ] && ! grep -q "$state_re" "$RESURRECT_DIR/last"; then
+    for f in $(ls -t "$RESURRECT_DIR"/tmux_resurrect_*.txt 2>/dev/null); do
+      if grep -q "$state_re" "$f"; then
+        mv "$(readlink -f "$RESURRECT_DIR/last")" "$(readlink -f "$RESURRECT_DIR/last").truncated"
+        ln -sfn "$(basename "$f")" "$RESURRECT_DIR/last"
+        break
+      fi
+    done
+  fi
+
+  # Server start sources tmux.conf -> tpm -> continuum auto-restore.
+  # Throwaway session keeps the server alive while restore runs detached.
+  tmux new-session -d -s _boot
+  for ((i = 0; i < TIMEOUT * 2; i++)); do
+    [ "$(tmux show-option -gv @restore_complete 2>/dev/null)" = "1" ] && break
+    sleep 0.5
+  done
+  tmux kill-session -t _boot 2>/dev/null
+fi
+
+# new -A attaches to the restored session, or creates it fresh if the
+# restore timed out / the session wasn't in the save.
+for ws in "${!SESSIONS[@]}"; do
+  hyprctl dispatch exec "[workspace $ws silent] kitty tmux new-session -A -s '${SESSIONS[$ws]}'"
+done

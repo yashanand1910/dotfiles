@@ -30,6 +30,7 @@ formatter.setup({
 		css = { "prettier" },
 		scss = { "prettier" },
 		proto = { "buf" },
+		spajson = { "prettier" },
 	},
 })
 

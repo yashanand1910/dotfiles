@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Launch Steam Big Picture inside gamescope for Steam Remote Play / Steam Link.
+#
+# Why gamescope: on Hyprland + NVIDIA, Steam's normal desktop capture goes
+# through xdg-desktop-portal PipeWire, which can't hand Steam an importable
+# GPU (dmabuf) buffer -- it falls back to a ~37ms/frame CPU copy (laggy 4K,
+# 100% CPU, crashes on game launch). Running Steam nested in gamescope makes
+# Remote Play capture gamescope's own output GPU-side (gamescope_pipewire),
+# which needs gamescope built with the `pipewire` USE flag. Capture drops to
+# ~2ms and 4K streaming works.
+#
+# Flags:
+#   --prefer-vk-device 10de:2860  force the RTX 4070 (else gamescope picks the
+#                                 Intel iGPU and crashes on a dmabuf modifier
+#                                 assertion / cross-GPU mismatch).
+#   -W 3840 -H 2160               internal render resolution (true 4K).
+#   --framerate-limit 60          cap render to 60fps. Otherwise gamescope syncs
+#                                 to DP-2's 240Hz, pinning the GPU to ~94%
+#                                 (whole PC + mouse lag) and starving NVENC so
+#                                 encode balloons to ~40ms (~22fps stream).
+#   --allow-deferred-backend      tolerate the flaky nested-Hyprland startup
+#                                 handshake ("Compositor released us but we were
+#                                 not acquired"); if no window appears, rerun.
+#   -e                            Steam integration.
+#
+# Run this from inside your Hyprland session so it inherits the NVIDIA env
+# (GBM_BACKEND=nvidia-drm, __GLX_VENDOR_LIBRARY_NAME=nvidia, etc.).
+#
+# Then from the Apple TV: open Steam Link, connect to this host, and stream.
+# No monitor picker, no -pipewire flag, no per-monitor scaling issues -- the
+# gamescope window on the host is just a local mirror; the stream captures
+# gamescope's buffer directly regardless of where/whether that window shows.
+
+# Steam is single-instance: if a desktop Steam is already running, `steam
+# -gamepadui` just tells THAT instance to open Big Picture and gamescope stays
+# empty. So fully shut it down first and wait for it to exit.
+if pgrep -x steam >/dev/null; then
+  echo "Shutting down existing Steam..."
+  steam -shutdown >/dev/null 2>&1
+  for _ in $(seq 1 20); do
+    pgrep -x steam >/dev/null || break
+    sleep 1
+  done
+  pgrep -x steam >/dev/null && pkill -9 -x steam
+  sleep 1
+fi
+
+exec gamescope --prefer-vk-device 10de:2860 --allow-deferred-backend --framerate-limit 240 -W 2560 -H 1440 -r 240 -e -- steam

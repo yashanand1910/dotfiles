@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Stream mode script - toggles single-monitor mode for Steam Remote Play
+# Steam's desktop capture picks the wrong monitor/crop region on
+# multi-monitor Hyprland (X11 vs Wayland coordinate mismatch), so
+# streaming only works reliably with one active output.
+# Usage: stream_mode [on|off|true|false]
+
+if [ $# -eq 0 ]; then
+  echo "Usage: stream_mode [on|off|true|false]"
+  exit 1
+fi
+
+# hyprctl needs the instance signature when run outside the session
+if [ -z "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+  export HYPRLAND_INSTANCE_SIGNATURE=$(ls -t /run/user/$(id -u)/hypr | head -1)
+fi
+
+# makoctl needs the session bus when run outside the session
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+  export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+fi
+
+# Convert argument to lowercase
+arg=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+
+case "$arg" in
+on | true)
+  echo "Enabling stream mode (DP-2 only)..."
+  hyprctl keyword monitor "eDP-1, disable"
+  hyprctl keyword monitor "HDMI-A-1, disable"
+  makoctl mode -a do-not-disturb
+  echo "Stream mode enabled: eDP-1 and HDMI-A-1 disabled, notifications off"
+  ;;
+off | false)
+  echo "Disabling stream mode..."
+  hyprctl keyword monitor "eDP-1, 2560x1600@240.02, 0x0, 2"
+  hyprctl keyword monitor "HDMI-A-1, 3840x2160@60.00, 3200x-640, 2, transform, 3"
+  makoctl mode -r do-not-disturb
+  echo "Stream mode disabled: all monitors restored, notifications on"
+  ;;
+*)
+  echo "Invalid argument: $1"
+  echo "Usage: stream_mode [on|off|true|false]"
+  exit 1
+  ;;
+esac

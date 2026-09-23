@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# OpenRC shutdown hook (install: /etc/local.d/, must be executable).
+# The 'local' service stops first during shutdown, so this runs while the
+# user session (tmux server) is still alive: save the tmux environment
+# synchronously, so a reboot can never kill a save mid-write (a truncated
+# save loses every window name and layout on the next restore).
+#
+# save.sh MUST run via `tmux run-shell` — outside a tmux client context its
+# `tmux display-message -p` output gets control characters sanitized
+# (tabs -> '_' on tmux 3.5) and the dump comes out empty/corrupt.
+
+USER_NAME=yashanand
+USER_HOME=/home/yashanand
+SAVE_SCRIPT="$USER_HOME/.tmux/plugins/tmux-resurrect/scripts/save.sh"
+RESURRECT_DIR="$USER_HOME/.local/share/tmux/resurrect"
+
+log() { logger -t yashanand-shutdown "$*"; }
+
+runuser -u "$USER_NAME" -- tmux has-session 2>/dev/null || exit 0
+
+timeout 20 runuser -u "$USER_NAME" -- tmux run-shell "$SAVE_SCRIPT" >/dev/null 2>&1
+
+# Trust nothing: a complete save always has a tab-delimited state line.
+if grep -q "^state$(printf '\t')" "$(readlink -f "$RESURRECT_DIR/last")" 2>/dev/null; then
+  log "tmux environment saved"
+else
+  log "tmux save FAILED (missing/incomplete save file)"
+fi
+
+exit 0
