@@ -8,13 +8,7 @@
 
 case "$1" in
 start)
-  if pgrep -x steam >/dev/null; then
-    # Steam is single-instance: tell the running one to open Big Picture
-    steam steam://open/bigpicture >/dev/null 2>&1 &
-  else
-    # Not running: start directly in Big Picture (gamepad UI)
-    setsid steam -gamepadui >/dev/null 2>&1 &
-  fi
+  steam steam://open/bigpicture >/dev/null 2>&1 &
   ;;
 stop)
   pgrep -x steam >/dev/null || exit 0

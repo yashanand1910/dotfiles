@@ -29,7 +29,7 @@ alias python=python3
 alias pyenv="source ~/venv/bin/activate"
 
 # gentoo
-alias e="sudo emerge"
+alias e="sudo emerge --ask"
 alias eq="sudo equery"
 alias uc="sudo dispatch-conf"
 alias eix="sudo eix"

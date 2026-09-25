@@ -45,7 +45,6 @@ avante.setup({
 	},
 	rag_service = { -- RAG Service configuration
 		enabled = false, -- Enables the RAG service (see https://www.reddit.com/r/AI_Agents/comments/1ij4435/why_shouldnt_use_rag_for_your_ai_agents_and_what/)
-		host_mount = os.getenv("HOME") .. "/code", -- Host directory to mount into the RAG service container
 		runner = "docker", -- Runner for the RAG service (can use docker or nix)
 		llm = { -- Language Model (LLM) configuration for RAG service
 			provider = "openai", -- LLM provider
@@ -63,7 +62,6 @@ avante.setup({
 				max_embedding_tokens = 512, -- Maximum tokens per chunk sent to the embedding model
 			},
 		},
-		docker_extra_args = "", -- Extra arguments to pass to the docker command
 	},
 	providers = {
 		-- claude = {
@@ -184,6 +182,17 @@ avante.setup({
 			input = "i",
 		},
 	},
+	selector = {
+		-- Used by history (<leader>ah), model (<leader>a?), and @file pickers.
+		-- Telescope: <CR> opens directly, <C-Del> deletes a history entry,
+		-- preview pane renders the conversation as markdown.
+		provider = "telescope",
+		provider_opts = {},
+	},
+	input = {
+		provider = "snacks", -- floating input popup instead of cmdline vim.ui.input
+		provider_opts = {},
+	},
 	prompt_logger = { -- logs prompts to disk (timestamped, for replay/debugging)
 		enabled = true, -- toggle logging entirely
 		log_dir = vim.fn.stdpath("cache"), -- directory where logs are saved
@@ -198,9 +207,12 @@ avante.setup({
 		},
 	},
 	windows = {
+		sidebar_header = {
+			include_model = true, -- show active provider/model in the sidebar header
+		},
 		input = {
 			prefix = "",
-			height = 16,
+			height = 8,
 		},
 	},
 })

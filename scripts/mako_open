@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Open (invoke default action on) the OLDEST visible notification, then
+# dismiss it. Plain `makoctl invoke` targets the newest notification, which
+# opens the wrong Slack thread whenever several are stacked (sort=-time).
+
+id=$(makoctl list | grep -oP '^Notification \K\d+' | tail -1)
+[ -n "$id" ] || exit 0
+makoctl invoke -n "$id" && makoctl dismiss -n "$id"

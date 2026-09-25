@@ -10,12 +10,16 @@ max-history=10
 icon-location=right
 max-visible=10
 ignore-timeout=1
+default-timeout=15000
 sort=-time
 icons=1
 group-by=summary
 
 [grouped]
 format=<b>%s</b> (%g)\n%b
+
+[urgency=critical]
+default-timeout=0
 
 [mode=do-not-disturb]
 invisible=1

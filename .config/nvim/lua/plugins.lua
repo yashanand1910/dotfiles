@@ -312,7 +312,10 @@ local plugins = {
 		},
 	},
 	{
-		"yetone/avante.nvim",
+		"yashanand1910/avante.nvim",
+		-- Fork with ACP session/load replay fixes; switch back to
+		-- yetone/avante.nvim once https://github.com/avante-corp/avante.nvim/pull/3262 merges
+		branch = "fix/acp-new-chat-session-replay",
 		build = "make",
 		event = "VeryLazy",
 		dependencies = {
