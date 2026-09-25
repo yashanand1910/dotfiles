@@ -1,0 +1,6 @@
+#!/bin/sh
+# Fuzzy window picker, bound to prefix+w in tmux.conf (runs inside display-popup).
+# First field is $session_id:window_index for switch-client; hidden from fzf via --with-nth.
+target=$(tmux list-windows -a -F '#{session_id}:#{window_index}|#{session_name} #{window_index}: #{window_name}#{window_flags} [#{pane_current_command}]' \
+	| fzf --reverse --no-sort --delimiter='|' --with-nth=2 --prompt='window> ') || exit 0
+tmux switch-client -t "${target%%|*}"

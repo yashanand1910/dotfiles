@@ -1,0 +1,25 @@
+#!/bin/bash
+# Toggle the AW3225QF (DP-2) between SDR desktop and HDR mode.
+# Desktop default stays SDR; flip this on for YouTube HDR in Firefox, off after.
+# (Games/mpv don't need it — fullscreen HDR passthrough handles those.)
+
+# `hyprctl keyword` is legacy-parser only ("keyword can't work with non-legacy
+# parsers. Use eval."), so under the Lua config the monitor is reconfigured by
+# evaluating the same hl.monitor() call hyprland.lua uses — keep MON in sync
+# with the MONITORS block there.
+MON='output = "DP-2", mode = "3840x2160@239.99", position = "1280x-340", scale = 2, vrr = 2, bitdepth = 10'
+
+current=$(hyprctl monitors -j | jq -r '.[] | select(.name=="DP-2") | .colorManagementPreset')
+
+if [ "$current" = "hdredid" ] || [ "$current" = "hdr" ]; then
+    hyprctl eval "hl.monitor({ $MON })"
+    notify-send -t 3000 "HDR mode: OFF" "DP-2 back to SDR desktop"
+else
+    # hdredid = BT.2020/PQ with luminance from the monitor's EDID (994 nits).
+    # No sdrbrightness lift — that was an artificial 1.2x boost on SDR content to
+    # stop the desktop looking dim here, but it blows out SDR whites. Left at the
+    # default so what you see is the monitor's own mapping; add it back only if
+    # the SDR desktop is genuinely too dark in HDR mode.
+    hyprctl eval "hl.monitor({ $MON, cm = \"hdredid\" })"
+    notify-send -t 3000 "HDR mode: ON" "DP-2 in BT.2020/PQ — toggle off when done"
+fi

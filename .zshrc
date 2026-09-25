@@ -68,18 +68,11 @@ ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# zsh-vi-mode settings
-# precmd() {
-#   # Set SIGINT to ctrl-e while editing a command
-#   stty intr \^E
-# }
-# preexec() {
-#   # Now set it to ctrl-c when a command is running
-#   stty intr \^C
-# }
-# ZVM_VI_ESCAPE_BINDKEY=^C
-# ZVM_CURSOR_STYLE_ENABLED=false
-# ZVM_INSERT_MODE_CURSOR=ZVM_CURSOR_USER_DEFAULT
+# zsh-claude-code: Alt+\ turns the typed request into a command. The default
+# ^X is a prefix for many completion widgets, so zle stalls KEYTIMEOUT on
+# every press to disambiguate. Explain stays on Alt+E. Sonnet measured both
+# faster AND more careful than haiku for one-liners.
+ZSH_CLAUDE_SUGGEST_KEY='^[\'
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -92,11 +85,34 @@ plugins=(
     fzf
     zsh-autosuggestions
     zsh-claude-code
+    zsh-syntax-highlighting  # must stay last
 )
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
+# nicoulaj defaults to xterm-256 colors ($FG[071] etc.), which terminals never
+# remap — only ANSI 0-15 follow the kitty/tokyonight palette. Override with
+# base-16 codes so the prompt tracks whatever theme the terminal has loaded.
+PROMPT_SUCCESS_COLOR=$'\e[32m'   # green   -> tokyonight #9ece6a
+PROMPT_FAILURE_COLOR=$'\e[31m'   # red     -> tokyonight #f7768e
+PROMPT_VCS_INFO_COLOR=$'\e[90m'  # br-black-> tokyonight #414868
+
 source "$ZSH"/oh-my-zsh.sh
+
+# Strip the path off nicoulaj's left prompt — keep only the ❯ (❯❯❯ as root).
+# Inside a repo the right prompt already carries repo/branch context; outside
+# one, nvcsformats moves %~ into the right prompt so the path is never lost.
+zstyle ':vcs_info:*:*' nvcsformats "" "%~"
+PROMPT="%(0?.%{$PROMPT_SUCCESS_COLOR%}.%{$PROMPT_FAILURE_COLOR%})${SSH_TTY:+[%n@%m]}%{$FX[bold]%}%(!.$PROMPT_ROOT_END.$PROMPT_DEFAULT_END)%{$FX[no-bold]%}%{$FX[reset]%} "
+
+# Snappier Esc in vi-mode (default 40 = 400ms). Not lower than 15: multi-key
+# sequences like the vi-mode 'vv' need the window to register.
+KEYTIMEOUT=15
+
+# History: omz defaults are 50k/10k with dupes; keep everything, once
+HISTSIZE=200000
+SAVEHIST=200000
+setopt HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE HIST_REDUCE_BLANKS
 
 # User configuration
 
@@ -132,6 +148,103 @@ export GPG_TTY=$(tty)
 # if [ -z "$TMUX" ]; then
 #     tmux new-session -A
 # fi
+
+# Notify when a command running >=15s finishes while I'm not looking at it.
+# NOTE: kitty's notify_on_cmd_finish relies on OSC 133 prompt marks which tmux
+# does not forward to the outer terminal, so it never fires inside tmux — hence
+# this shell-level equivalent.
+if command -v notify-send >/dev/null; then
+    zmodload zsh/datetime
+    autoload -Uz add-zsh-hook
+
+    CMD_NOTIFY_THRESHOLD=15
+    # interactive/long-by-design programs that should never trigger a notification
+    CMD_NOTIFY_IGNORE=(nvim vim vi less man ssh mosh k9s btop htop top lazydocker lazygit fzf tmux watch journalctl tail claude)
+
+    # hyprctl needs HYPRLAND_INSTANCE_SIGNATURE, which shells inside tmux don't
+    # inherit (tmux server predates/outlives the compositor session) — recover
+    # it from the hypr runtime dir.
+    __cmd_notify_hyprctl() {
+        local rt=${XDG_RUNTIME_DIR:-/run/user/$UID}/hypr sig
+        # the env signature goes stale when Hyprland restarts under a
+        # long-lived tmux server, and hyprctl exits 0 even when it can't
+        # connect — only trust a signature whose IPC socket exists
+        for sig in "$HYPRLAND_INSTANCE_SIGNATURE" ${(f)"$(ls -t $rt 2>/dev/null)"}; do
+            if [[ -n $sig && -S $rt/$sig/.socket.sock ]]; then
+                HYPRLAND_INSTANCE_SIGNATURE=$sig hyprctl "$@" 2>/dev/null
+                return
+            fi
+        done
+        return 1
+    }
+
+    __cmd_notify_preexec() {
+        __cmd_notify_start=$EPOCHSECONDS
+        __cmd_notify_cmd=$1
+    }
+
+    __cmd_notify_precmd() {
+        [[ -z $__cmd_notify_start ]] && return
+        local elapsed=$(( EPOCHSECONDS - __cmd_notify_start ))
+        local cmd=$__cmd_notify_cmd
+        unset __cmd_notify_start __cmd_notify_cmd
+        (( elapsed < CMD_NOTIFY_THRESHOLD )) && return
+
+        local -a words; words=(${(z)cmd})
+        local first=${words[1]:t}
+        [[ $first == sudo && -n ${words[2]} ]] && first=${words[2]:t}
+        [[ -n ${CMD_NOTIFY_IGNORE[(r)$first]} ]] && return
+
+        local pane=$TMUX_PANE sess=
+        [[ -n $pane ]] && sess=$(tmux display -p -t "$pane" '#{session_name}' 2>/dev/null)
+
+        # suppress when already looking at this pane: it is the active pane of
+        # its session AND the focused Hyprland window is the kitty window
+        # showing that session (kitty titles are '#S: #W' via tmux set-titles)
+        if [[ -n $pane ]]; then
+            local visible=$(tmux display -p -t "$pane" \
+                '#{&&:#{session_attached},#{&&:#{window_active},#{pane_active}}}' 2>/dev/null)
+            local focused_title=$(__cmd_notify_hyprctl activewindow -j | jq -r '.title' 2>/dev/null)
+            [[ $visible == 1 && $focused_title == "$sess: "* ]] && return
+        fi
+
+        # -A implies --wait, so run in a disowned subshell to not block the prompt.
+        # Clicking the notification jumps to the pane and focuses the kitty
+        # window whose tmux client shows that session.
+        (
+            action=$(notify-send -a tmux -t 10000 -A default=Open "Done in ${elapsed}s" "[$sess] ${cmd:0:100}")
+            [[ $action == default && -n $pane ]] || exit 0
+            tmux select-pane -t "$pane" 2>/dev/null
+            tmux select-window -t "$pane" 2>/dev/null
+            # if no kitty window shows this session, bring it up on the client
+            # that last displayed it (@home_client, maintained by tmux hooks);
+            # fall back to the most recently used client
+            if ! tmux list-clients -F '#{session_name}' 2>/dev/null | grep -qxF "$sess"; then
+                client=$(tmux show-option -t "$sess" -qv @home_client 2>/dev/null)
+                tmux list-clients -F '#{client_name}' 2>/dev/null | grep -qxF "$client" || client=
+                [[ -z $client ]] && client=$(tmux list-clients -F '#{client_activity} #{client_name}' 2>/dev/null \
+                    | sort -rn | head -n1 | cut -d' ' -f2)
+                [[ -n $client ]] && tmux switch-client -c "$client" -t "$pane" 2>/dev/null
+            fi
+            # find the kitty window now titled '$sess: ...' (retry: the title
+            # takes a moment to catch up after switch-client)
+            addr=
+            for _ in 1 2 3 4 5; do
+                sleep 0.2
+                addr=$(__cmd_notify_hyprctl clients -j | jq -r --arg t "$sess: " \
+                    '[.[] | select(.class=="kitty" and (.title|startswith($t)))][0].address // empty' 2>/dev/null)
+                [[ -n $addr ]] && break
+            done
+            # Under the Lua config `hyprctl dispatch X` evaluates X as Lua, so the
+            # old "focuswindow address:0x..." string is a syntax error.
+            [[ -n $addr ]] && __cmd_notify_hyprctl dispatch \
+                "hl.dsp.focus({ window = 'address:$addr' })"
+        ) >/dev/null 2>&1 &!
+    }
+
+    add-zsh-hook preexec __cmd_notify_preexec
+    add-zsh-hook precmd __cmd_notify_precmd
+fi
 
 # LINUX-ONLY CONFIG (non-macOS)
 if [[  "$(uname)" == "Linux" ]]; then

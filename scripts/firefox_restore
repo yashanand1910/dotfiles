@@ -23,6 +23,14 @@ SETTLE=180  # seconds to keep re-matching while page titles settle
 
 mkdir -p "$(dirname "$STATE")"
 
+# A Hyprland restart re-runs exec-once, spawning a fresh copy of this script
+# while the old one survives (bash doesn't care that the compositor died).
+# The survivor's hyprctl calls fail forever, yet it keeps holding the recorder
+# lock — so the fresh copy exits at the flock and nothing records anymore.
+# Exit instead as soon as our own compositor instance is gone.
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+hypr_alive() { [ -e "$RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock" ]; }
+
 # On a re-run with Firefox already up, skip the launch (it would open an
 # extra blank window in the running instance) and just re-place windows.
 if ! pgrep -x firefox >/dev/null; then
@@ -44,6 +52,13 @@ recorded_ws() { # title -> workspace, empty if not recorded
   [ -s "$STATE" ] && awk -F'\t' -v t="$1" '$2 == t {print $1; exit}' "$STATE"
 }
 
+# Under the Lua config `hyprctl dispatch X` evaluates X as Lua (it is a wrapper
+# for hl.dispatch(X)), so the old "movetoworkspacesilent N,address:0x..." string
+# is a syntax error and silently does nothing. follow=false is the "silent" half.
+move_silent() { # workspace, address
+  hyprctl dispatch "hl.dsp.window.move({ workspace = '$1', follow = false, window = 'address:$2' })"
+}
+
 # Initial placement: matched windows go to their recorded workspace; the rest
 # take the fallback workspaces nobody claimed (with 1 unmatched window that
 # pins it exactly), in FALLBACK order.
@@ -54,7 +69,7 @@ unmatched=()
 while IFS=$'\t' read -r _ addr title; do
   ws=$(recorded_ws "$title")
   if [ -n "$ws" ]; then
-    hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+    move_silent "$ws" "$addr"
     used[$ws]=1
     moved[$addr]=1
   else
@@ -68,17 +83,18 @@ for addr in "${unmatched[@]}"; do
     [ -z "${used[$f]}" ] && ws=$f && break
   done
   used[$ws]=1
-  hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+  move_silent "$ws" "$addr"
 done
 
 # Settle phase: pages retitle as they finish loading, so keep re-matching and
 # move each late-matching window (once) to its recorded workspace. The state
 # file stays untouched until this is over — it is the authority meanwhile.
 for ((t = 0; t < SETTLE; t += 5)); do
+  hypr_alive || exit 0
   while IFS=$'\t' read -r cur_ws addr title; do
     ws=$(recorded_ws "$title")
     if [ -n "$ws" ] && [ "$ws" != "$cur_ws" ] && [ -z "${moved[$addr]}" ]; then
-      hyprctl dispatch movetoworkspacesilent "$ws,address:$addr"
+      move_silent "$ws" "$addr"
       moved[$addr]=1
     fi
   done < <(firefox_windows)
@@ -90,7 +106,7 @@ done
 # the tmp+mv keeps a reboot mid-write from truncating the mapping.
 exec 9>"$STATE.lock"
 flock -n 9 || exit 0
-while true; do
+while hypr_alive; do
   firefox_windows | cut -f1,3 >"$STATE.tmp"
   # Never record an empty list (Firefox quit/crashed) — it would wipe the
   # mapping the next boot needs.

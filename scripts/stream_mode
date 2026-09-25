@@ -24,18 +24,22 @@ fi
 # Convert argument to lowercase
 arg=$(echo "$1" | tr '[:upper:]' '[:lower:]')
 
+# `hyprctl keyword` is legacy-parser only ("keyword can't work with non-legacy
+# parsers. Use eval."), so under the Lua config monitors are reconfigured by
+# evaluating the same hl.monitor() calls hyprland.lua uses. Keep these in sync
+# with the MONITORS block there.
 case "$arg" in
 on | true)
   echo "Enabling stream mode (DP-2 only)..."
-  hyprctl keyword monitor "eDP-1, disable"
-  hyprctl keyword monitor "HDMI-A-1, disable"
+  hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = true })'
+  hyprctl eval 'hl.monitor({ output = "HDMI-A-1", disabled = true })'
   makoctl mode -a do-not-disturb
   echo "Stream mode enabled: eDP-1 and HDMI-A-1 disabled, notifications off"
   ;;
 off | false)
   echo "Disabling stream mode..."
-  hyprctl keyword monitor "eDP-1, 2560x1600@240.02, 0x0, 2"
-  hyprctl keyword monitor "HDMI-A-1, 3840x2160@60.00, 3200x-640, 2, transform, 3"
+  hyprctl eval 'hl.monitor({ output = "eDP-1", disabled = false, mode = "2560x1600@240.02", position = "0x0", scale = 2 })'
+  hyprctl eval 'hl.monitor({ output = "HDMI-A-1", disabled = false, mode = "3840x2160@60.00", position = "3200x-640", scale = 2, transform = 3 })'
   makoctl mode -r do-not-disturb
   echo "Stream mode disabled: all monitors restored, notifications on"
   ;;

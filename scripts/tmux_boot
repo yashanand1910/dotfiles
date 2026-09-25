@@ -47,6 +47,12 @@ fi
 
 # new -A attaches to the restored session, or creates it fresh if the
 # restore timed out / the session wasn't in the save.
+#
+# Under the Lua config `hyprctl dispatch X` evaluates X as Lua (it is a wrapper
+# for hl.dispatch(X)), so the old "exec [workspace N silent] cmd" string is a
+# syntax error and silently does nothing. [[...]] is a Lua long string, which
+# keeps the single quotes around the session name from needing escapes.
 for ws in "${!SESSIONS[@]}"; do
-  hyprctl dispatch exec "[workspace $ws silent] kitty tmux new-session -A -s '${SESSIONS[$ws]}'"
+  hyprctl dispatch \
+    "hl.dsp.exec_cmd([[kitty tmux new-session -A -s '${SESSIONS[$ws]}']], { workspace = '$ws silent' })"
 done
