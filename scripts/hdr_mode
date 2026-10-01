@@ -11,15 +11,30 @@ MON='output = "DP-2", mode = "3840x2160@239.99", position = "1280x-340", scale =
 
 current=$(hyprctl monitors -j | jq -r '.[] | select(.name=="DP-2") | .colorManagementPreset')
 
+# hl.monitor() *merges* into the output's existing rule, so leaving `cm` out
+# doesn't reset it — it keeps whatever preset was last applied. The off branch
+# used to omit it, which is why HDR would turn on and then never turn back off.
+# Both directions have to name a preset explicitly.
 if [ "$current" = "hdredid" ] || [ "$current" = "hdr" ]; then
-    hyprctl eval "hl.monitor({ $MON })"
-    notify-send -t 3000 "HDR mode: OFF" "DP-2 back to SDR desktop"
+    # Must be "srgb", not "auto". The Lua config parser defaults cm to "srgb"
+    # (LuaBindingsConfigRules.cpp: CLuaConfigString("srgb")), so that — not the
+    # legacy monitorv2 parser's "auto" — is what hyprland.lua's MONITORS block
+    # gives DP-2 at boot. And "auto" is *not* a safe stand-in: it means "srgb for
+    # 8bpc, wide for 10bpc" (CMType.hpp), and DP-2 runs bitdepth = 10, so auto
+    # lands on CM_WIDE/BT.2020 primaries and the SDR desktop looks washed out.
+    cm=srgb
+    summary="HDR mode: OFF"
+    body="DP-2 back to SDR desktop"
 else
     # hdredid = BT.2020/PQ with luminance from the monitor's EDID (994 nits).
     # No sdrbrightness lift — that was an artificial 1.2x boost on SDR content to
     # stop the desktop looking dim here, but it blows out SDR whites. Left at the
     # default so what you see is the monitor's own mapping; add it back only if
     # the SDR desktop is genuinely too dark in HDR mode.
-    hyprctl eval "hl.monitor({ $MON, cm = \"hdredid\" })"
-    notify-send -t 3000 "HDR mode: ON" "DP-2 in BT.2020/PQ — toggle off when done"
+    cm=hdredid
+    summary="HDR mode: ON"
+    body="DP-2 in BT.2020/PQ — toggle off when done"
 fi
+
+hyprctl eval "hl.monitor({ $MON, cm = \"$cm\" })"
+notify-send -t 3000 "$summary" "$body"

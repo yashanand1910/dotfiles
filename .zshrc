@@ -93,9 +93,9 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # nicoulaj defaults to xterm-256 colors ($FG[071] etc.), which terminals never
 # remap — only ANSI 0-15 follow the kitty/tokyonight palette. Override with
 # base-16 codes so the prompt tracks whatever theme the terminal has loaded.
-PROMPT_SUCCESS_COLOR=$'\e[32m'   # green   -> tokyonight #9ece6a
-PROMPT_FAILURE_COLOR=$'\e[31m'   # red     -> tokyonight #f7768e
-PROMPT_VCS_INFO_COLOR=$'\e[90m'  # br-black-> tokyonight #414868
+PROMPT_SUCCESS_COLOR=$'\e[32m'   # green   -> tokyonight #9fe044
+PROMPT_FAILURE_COLOR=$'\e[31m'   # red     -> tokyonight #ff899d
+PROMPT_VCS_INFO_COLOR=$'\e[90m'  # br-black-> tokyonight #405291
 
 source "$ZSH"/oh-my-zsh.sh
 

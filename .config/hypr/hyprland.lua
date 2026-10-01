@@ -371,9 +371,15 @@ hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("makoctl restore"))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("~/code/scripts/mako_open"))
 hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("makoctl invoke delete-moz && makoctl dismiss"))
 
--- Screen off (the sleep lets the key release land before the screens go dark;
--- `hyprctl dispatch` takes Lua now, so the old "dpms off" string no longer parses)
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd([[sleep 0.5 && hyprctl dispatch 'hl.dsp.dpms("off")']]))
+-- Screen off. Fires on key *release* and still waits a beat, because
+-- key_press_enables_dpms below wakes the screens on any key event: blanking
+-- while the chord is still held meant letting go turned them straight back on.
+-- (`hyprctl dispatch` takes Lua now, so the old "dpms off" string no longer parses)
+hl.bind(
+	mainMod .. " + SHIFT + S",
+	hl.dsp.exec_cmd([[sleep 1 && hyprctl dispatch 'hl.dsp.dpms("off")']]),
+	{ release = true }
+)
 
 -- Toggle HDR mode on the Alienware (for YouTube HDR etc.)
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.exec_cmd("~/code/scripts/hdr_mode"))

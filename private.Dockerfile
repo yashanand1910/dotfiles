@@ -219,6 +219,8 @@ ln -sf /home/${USER}/code/dotfiles/.vimrc .vimrc
 ln -sf /home/${USER}/code/dotfiles/.zshrc .zshrc
 ln -sf /home/${USER}/code/dotfiles/.tmux.conf .tmux.conf
 ln -sf /home/${USER}/code/dotfiles/.oh-my-zsh/* .oh-my-zsh/custom/
+mkdir -p .claude
+ln -sf /home/${USER}/code/dotfiles/.claude/CLAUDE.md .claude/CLAUDE.md
 EOT
 
 ADD --chown=${USER}:${USER} --chmod=755 code/dotfiles/entrypoint entrypoint

@@ -49,10 +49,10 @@ alias kc="kubectl"
 alias k9s="k9s -A --logoless"
 
 # pnpm
-export PNPM_HOME="/home/ubuntu/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
-    *":$PNPM_HOME:"*) ;;
-    *) export PATH="$PNPM_HOME:$PATH" ;;
+*":$PNPM_HOME:"*) ;;
+*) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # The next line updates PATH for Nebius CLI.

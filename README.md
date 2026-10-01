@@ -39,6 +39,7 @@ ln -s ~/Code/dotfiles/.vimrc ~
 ln -s ~/Code/dotfiles/.vim/* ~/.vim
 ln -s ~/Code/dotfiles/.config/* ~/.config
 ln -s ~/Code/dotfiles/.oh-my-zsh/* ~/.oh-my-zsh/custom
+mkdir -p ~/.claude && ln -s ~/Code/dotfiles/.claude/CLAUDE.md ~/.claude/CLAUDE.md
 ...
 ```
 

@@ -34,8 +34,50 @@ local plugins = {
 		lazy = false,
 		priority = 1000,
 		opts = {
-			dim_inactive = true,
+			-- Keep in sync with the `colorscheme` call in theme.lua: that sets the
+			-- loaded style, but `colors.setup()` reads this one, and a mismatch makes
+			-- the Comment override there resolve against the wrong palette.
+			style = "night", --> darker bg than moon, and matches kitty's current-theme.conf
+			dim_inactive = false, --> dimming inactive windows washes out the already-soft palette
 			-- transparent = true,
+			-- Tokyonight ships no "bright" style, so boost saturation/lightness of
+			-- every accent color via the plugin's own HSLuv helper. Backgrounds and
+			-- gutter/border grays are deliberately left alone.
+			on_colors = function(c)
+				local brighten = require("tokyonight.util").brighten
+				local accents = {
+					"red",
+					"red1",
+					"orange",
+					"yellow",
+					"green",
+					"green1",
+					"green2",
+					"teal",
+					"cyan",
+					"blue",
+					"blue0",
+					"blue1",
+					"blue2",
+					"blue5",
+					"blue6",
+					"magenta",
+					"magenta2",
+					"purple",
+					"fg",
+					"fg_dark",
+					"comment",
+					"dark5",
+				}
+				for _, key in ipairs(accents) do
+					if c[key] then
+						c[key] = brighten(c[key], 0.05, 0.25)
+					end
+				end
+				for key, value in pairs(c.git or {}) do
+					c.git[key] = brighten(value, 0.05, 0.25)
+				end
+			end,
 			on_highlights = function(hl, c)
 				local prompt = "#2d3149"
 				hl.TelescopeNormal = {
@@ -312,15 +354,13 @@ local plugins = {
 		},
 	},
 	{
-		"yashanand1910/avante.nvim",
-		-- Fork with ACP session/load replay fixes; switch back to
-		-- yetone/avante.nvim once https://github.com/avante-corp/avante.nvim/pull/3262 merges
-		branch = "fix/acp-new-chat-session-replay",
+		"avante-corp/avante.nvim",
 		build = "make",
 		event = "VeryLazy",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
+			{ "ColinKennedy/mega.cmdparse", dependencies = { "ColinKennedy/mega.logging" } },
 			--- The below dependencies are optional,
 			"echasnovski/mini.pick", -- for file_selector provider mini.pick
 			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
