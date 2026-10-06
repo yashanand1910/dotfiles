@@ -490,6 +490,10 @@ local key_opt = {
 		"<C-w>k",
 		"Switch to top split buffer",
 	},
+	{ "i", "<C-h>", "<Esc><C-w>h", "Switch to left split buffer" },
+	{ "i", "<C-l>", "<Esc><C-w>l", "Switch to right split buffer" },
+	{ "i", "<C-j>", "<Esc><C-w>j", "Switch to bottom split buffer" },
+	{ "i", "<C-k>", "<Esc><C-w>k", "Switch to top split buffer" },
 	{
 		"n",
 		"<leader>bd",
@@ -740,6 +744,11 @@ local key_opt = {
 	{ "n", "<leader>Ls", ":LBSubmit<CR>", "LeetCode submit" },
 }
 -- }}}
+
+-- Ctrl-<num>: go to tab <num>
+for i = 1, 9 do
+	table.insert(key_opt, { "n", "<C-" .. i .. ">", i .. "gt", "Go to tab " .. i })
+end
 
 -- Set keybindings
 for _, v in ipairs(key_opt) do

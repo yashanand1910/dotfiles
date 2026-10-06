@@ -35,6 +35,7 @@ safe_require("lsp.formatter")
 safe_require("config.treesitter")
 safe_require("config.oil")
 safe_require("config.avante")
+safe_require("config.octo")
 
 -- Miscellaneous configurations
 safe_require("misc")
