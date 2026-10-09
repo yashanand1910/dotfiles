@@ -36,6 +36,7 @@ safe_require("config.treesitter")
 safe_require("config.oil")
 safe_require("config.avante")
 safe_require("config.octo")
+safe_require("config.render-markdown")
 
 -- Miscellaneous configurations
 safe_require("misc")

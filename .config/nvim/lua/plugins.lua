@@ -255,14 +255,7 @@ local plugins = {
 	-- 		vim.fn["mkdp#util#install"]()
 	-- 	end,
 	-- },
-	{
-		-- Make sure to set this up properly if you have lazy=true
-		"MeanderingProgrammer/render-markdown.nvim",
-		opts = {
-			file_types = { "markdown", "Avante", "AvanteInput", "octo", "gitcommit" },
-		},
-		ft = { "markdown", "Avante", "AvanteInput", "octo", "gitcommit" },
-	},
+	"MeanderingProgrammer/render-markdown.nvim", --> configured in config/render-markdown.lua
 
 	{
 		"smjonas/inc-rename.nvim", --> Incremental rename

@@ -106,7 +106,10 @@ avante.setup({
 				NODE_NO_WARNINGS = "1",
 				-- ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"), -- Use claude code that's logged-in
 				-- ANTHROPIC_BASE_URL = os.getenv("ANTHROPIC_BASE_URL"),
-				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.exepath("claude"),
+				-- Wrapper around `claude` that appends --allowedTools Grep,Glob: the
+				-- 2.1.28x default tool preset drops those tools and search falls back to
+				-- verbose Bash grep. See scripts/claude-acp.
+				ACP_PATH_TO_CLAUDE_CODE_EXECUTABLE = vim.fn.expand("~/code/dotfiles/scripts/claude-acp"),
 				ACP_PERMISSION_MODE = "bypassPermissions",
 			},
 		},
@@ -212,7 +215,32 @@ avante.setup({
 		},
 		input = {
 			prefix = "",
-			height = 8,
+			height = 3,
 		},
 	},
+})
+
+-- Keep the sidebar input at its configured height after a terminal resize.
+-- Avante's own VimResized handler only re-applies widths, so Neovim's row
+-- redistribution lands on the input window (bottom of the sidebar column) and
+-- it grows or shrinks with the pane. Let the result window absorb the change.
+vim.api.nvim_create_autocmd("VimResized", {
+	group = vim.api.nvim_create_augroup("avante_fixed_input_height", { clear = true }),
+	callback = function()
+		local sidebar = require("avante").get()
+		if not sidebar or not sidebar:is_open() then
+			return
+		end
+		local result, input = sidebar.containers.result, sidebar.containers.input
+		if
+			not (result and input and result.winid and input.winid)
+			or not vim.api.nvim_win_is_valid(result.winid)
+			or not vim.api.nvim_win_is_valid(input.winid)
+		then
+			return
+		end
+		vim.wo[result.winid].winfixheight = false
+		vim.api.nvim_win_set_height(input.winid, require("avante.config").windows.input.height)
+		vim.wo[result.winid].winfixheight = true
+	end,
 })

@@ -11,6 +11,7 @@ require("nvim-treesitter").install({
 	"rust",
 	"markdown",
 	"markdown_inline",
+	"html", --> inline HTML in markdown (render-markdown html.tag)
 	"regex",
 	"yaml",
 	"json",

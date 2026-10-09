@@ -1,0 +1,7 @@
+#!/bin/sh
+# Wrapper for the claude binary used by avante.nvim via claude-agent-acp.
+# Claude Code 2.1.28x's default tool preset omits the dedicated Grep/Glob tools
+# (search falls back to Bash grep, which is far more verbose). The Agent SDK
+# docs say listing them in --allowedTools opts them back in, but avante has no
+# way to send that option through ACP, so append the flag here.
+exec "$HOME/.local/bin/claude" "$@" --allowedTools Grep,Glob
