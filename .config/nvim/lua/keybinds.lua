@@ -25,7 +25,7 @@ local function url_handler()
 	-- <something>://<something that aren't >,;)>
 	local url = string.match(vim.fn.getline("."), "[a-z]*://[^ >,;)]*")
 	if url ~= nil then
-		vim.cmd("silent exec '!xdg-open " .. url .. "'")
+		vim.ui.open(url)
 	else
 		vim.notify("No URI found in the current line")
 	end

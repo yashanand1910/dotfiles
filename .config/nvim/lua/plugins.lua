@@ -24,7 +24,17 @@ local plugins = {
 		opts = {
 			-- Kitty graphics protocol: kitty, Ghostty and Rootshell (iPad). Inside tmux,
 			-- needs allow-passthrough; other terminals are detected and skipped
-			image = { enabled = true },
+			image = {
+				enabled = true,
+				-- Hide the source of rendered math and mermaid blocks (it shows again on
+				-- the cursor line). Image text stays: hidden text still takes up its
+				-- wrapped rows, so hiding it would only leave blank lines.
+				doc = {
+					conceal = function(_, type)
+						return type == "math" or type == "chart"
+					end,
+				},
+			},
 		},
 		config = function(_, opts)
 			require("snacks").setup(opts)
@@ -170,6 +180,11 @@ local plugins = {
 				diagnostics = "nvim_lsp",
 				update_in_insert = true,
 				always_show_bufferline = true,
+				-- Hide empty [No Name] buffers (e.g. the startup buffer left behind when
+				-- a file is opened in another window)
+				custom_filter = function(buf)
+					return vim.api.nvim_buf_get_name(buf) ~= "" or vim.bo[buf].modified
+				end,
 			},
 		},
 	},

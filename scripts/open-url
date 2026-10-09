@@ -1,0 +1,30 @@
+#!/bin/sh
+# Open a URL in the browser of whichever device is driving the terminal.
+# Rootshell (iPad) gets iTerm2's OSC 1337 OpenURL sequence and opens the link
+# on the device (needs Settings → Terminal → "Open Links from Programs");
+# everything else goes to the local xdg-open.
+url=$1
+
+case $url in
+http://* | https://*) ;;
+*) exec env -u BROWSER xdg-open "$url" ;;
+esac
+
+if [ -n "$TMUX" ]; then
+	# The tmux client's environment has LC_TERMINAL (pane environments don't).
+	# Writing to the client tty directly skips tmux passthrough, so this also
+	# works from run-shell/popups, which have no tty
+	set -- $(tmux display -p '#{client_pid} #{client_tty}' 2>/dev/null)
+	tty=$2
+	terminal=$(tr '\0' '\n' <"/proc/$1/environ" 2>/dev/null | sed -n 's/^LC_TERMINAL=//p')
+else
+	tty=/dev/tty
+	terminal=$LC_TERMINAL
+fi
+
+if [ "$terminal" = rootshell ]; then
+	printf '\033]1337;OpenURL=:%s\a' "$(printf %s "$url" | base64 -w0)" >"$tty"
+else
+	# Unset BROWSER: it points back at this script
+	env -u BROWSER xdg-open "$url" >/dev/null 2>&1 &
+fi

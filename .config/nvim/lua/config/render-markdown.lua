@@ -7,8 +7,22 @@
 -- Needs the "html" tree-sitter parser (installed in config/treesitter.lua).
 local html_tags = {
 	img = { icon = "󰥶 ", highlight = "RenderMarkdownImage" },
-	a = { icon = "󰌹 ", highlight = "RenderMarkdownLink", scope_highlight = "RenderMarkdownLink" },
+	a ={ icon = "󰌹 ", highlight = "RenderMarkdownLink", scope_highlight = "RenderMarkdownLink" },
+	summary = { scope_highlight = "@markup.strong" },
+	-- Tags with no markdown look of their own: just hide them. <source> is a
+	-- <picture> alternative (dark/light badge), so the whole tag goes.
+	picture = {},
+	source = {},
+	details = {},
+	p = {},
+	sub = {},
+	br = {},
 }
+-- <h1>..<h6> get the same icons and colors as markdown headings
+for level, icon in ipairs({ "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " }) do
+	local hl = "RenderMarkdownH" .. level
+	html_tags["h" .. level] = { icon = icon, highlight = hl, scope_highlight = hl }
+end
 
 -- The builtin html handler only matches `<tag>` start tags, so self-closing
 -- `<img ... />` is skipped. This extends it with the same treatment.
@@ -45,6 +59,9 @@ end
 require("render-markdown").setup({
 	file_types = { "markdown", "Avante", "AvanteInput", "octo", "gitcommit" },
 	html = { tag = html_tags },
+	-- snacks.image draws mermaid blocks as diagrams; a code-block background
+	-- and "mermaid" label around the diagram would just be noise
+	code = { disable = { "mermaid" } },
 	custom_handlers = {
 		html = { extends = true, parse = self_closing_tags },
 	},

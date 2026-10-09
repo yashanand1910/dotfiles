@@ -48,3 +48,25 @@ require("octo").setup({
 		},
 	},
 })
+
+-- <details> folds show the raw <summary> HTML as the fold line, e.g.
+-- "▶ <h3>Summary</h3> …". Strip the tags so only the text is left.
+local folds = require("octo.folds")
+local parse_details_blocks = folds.parse_details_blocks
+folds.parse_details_blocks = function(...)
+	local blocks = parse_details_blocks(...)
+	for _, block in ipairs(blocks) do
+		local summary = vim.trim((block.summary:gsub("<[^>]*>", "")))
+		block.summary = summary ~= "" and summary or "Details"
+	end
+	return blocks
+end
+
+-- Octo windows wrap, and wrapping counts concealed text (long image URLs,
+-- HTML tags), so those lines get empty continuation rows. Drop the showbreak
+-- marker there so the empty rows don't each show a "↪".
+vim.api.nvim_create_autocmd("BufWinEnter", {
+	group = vim.api.nvim_create_augroup("octo_showbreak", { clear = true }),
+	pattern = "octo://*",
+	command = "setlocal showbreak=NONE",
+})

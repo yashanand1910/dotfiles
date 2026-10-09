@@ -7,6 +7,10 @@ export ZSH="$HOME/.oh-my-zsh"
 # cargo-installed binaries (rtk, ast-grep)
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# Browser-launching CLIs (gh browse, OAuth logins, ...) open on the device
+# driving the terminal — see scripts/open-url
+export BROWSER=open-url
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
