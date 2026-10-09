@@ -48,4 +48,20 @@ require("render-markdown").setup({
 	custom_handlers = {
 		html = { extends = true, parse = self_closing_tags },
 	},
+	-- Avante buffers are nofile, which by default renders in every mode and
+	-- hides the gutter signs. Undo that so they look like markdown files.
+	-- The result window has no signcolumn (avante sets it to "no"), so add one.
+	overrides = {
+		filetype = {
+			Avante = {
+				render_modes = { "n", "c", "t" },
+				sign = { enabled = true },
+				win_options = { signcolumn = { default = "yes", rendered = "yes" } },
+			},
+			AvanteInput = {
+				render_modes = { "n", "c", "t" },
+				sign = { enabled = true },
+			},
+		},
+	},
 })

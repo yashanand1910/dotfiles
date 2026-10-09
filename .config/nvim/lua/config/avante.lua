@@ -215,32 +215,71 @@ avante.setup({
 		},
 		input = {
 			prefix = "",
-			height = 3,
+			height = 1, -- starting point only; see the autocmds below
 		},
 	},
 })
 
--- Keep the sidebar input at its configured height after a terminal resize.
--- Avante's own VimResized handler only re-applies widths, so Neovim's row
--- redistribution lands on the input window (bottom of the sidebar column) and
--- it grows or shrinks with the pane. Let the result window absorb the change.
-vim.api.nvim_create_autocmd("VimResized", {
-	group = vim.api.nvim_create_augroup("avante_fixed_input_height", { clear = true }),
-	callback = function()
-		local sidebar = require("avante").get()
-		if not sidebar or not sidebar:is_open() then
-			return
+-- Keep the input window bare: no "Ask (<C-tab>: switch focus)" winbar and no
+-- "Tokens: N; <C-s>: submit" floating hint. Neither has its own config toggle
+-- (windows.sidebar_header.enabled would also drop the result header + model).
+local Sidebar = require("avante.sidebar")
+Sidebar.render_input = function() end
+Sidebar.show_input_hint = function() end
+
+-- Size the input window to its content: 1 line while focused, growing with the
+-- text (wrapped lines included, capped at half the screen), and 0 lines once
+-- it is empty and unfocused.
+-- Neovim keeps the current window at >= 1 line regardless, so the collapse
+-- happens when focus moves away (avante jumps to the result once a reply is
+-- done). The result window has winfixheight from nui, so drop it while
+-- resizing and let the result absorb the change. Also re-applied on
+-- VimResized, since avante's own handler only re-applies widths and the row
+-- redistribution would otherwise land on the input window.
+vim.o.winminheight = 0 -- required for a 0-line window
+
+local function fit_input_window()
+	local sidebar = require("avante").get()
+	if not sidebar or not sidebar:is_open() then
+		return
+	end
+	local result, input = sidebar.containers.result, sidebar.containers.input
+	if
+		not (result and input and result.winid and input.winid)
+		or not vim.api.nvim_win_is_valid(result.winid)
+		or not vim.api.nvim_win_is_valid(input.winid)
+	then
+		return
+	end
+	local height
+	local lines = vim.api.nvim_buf_get_lines(input.bufnr, 0, -1, false)
+	if #lines == 1 and lines[1] == "" then
+		height = vim.api.nvim_get_current_win() == input.winid and 1 or 0
+	else
+		-- Capped so a long prompt can't squeeze the result window out.
+		height = math.min(vim.api.nvim_win_text_height(input.winid, {}).all, math.floor(vim.o.lines / 2))
+	end
+	vim.wo[result.winid].winfixheight = false
+	vim.api.nvim_win_set_height(input.winid, height)
+	vim.wo[result.winid].winfixheight = true
+end
+
+local group = vim.api.nvim_create_augroup("avante_fit_input_height", { clear = true })
+vim.api.nvim_create_autocmd("VimResized", { group = group, callback = fit_input_window })
+vim.api.nvim_create_autocmd("FileType", {
+	group = group,
+	pattern = "AvanteInput",
+	callback = function(ev)
+		-- Scheduled so BufLeave runs after the window switch (the input is still
+		-- the current window while BufLeave fires, which pins it at 1 line).
+		local function fit_later()
+			vim.schedule(fit_input_window)
 		end
-		local result, input = sidebar.containers.result, sidebar.containers.input
-		if
-			not (result and input and result.winid and input.winid)
-			or not vim.api.nvim_win_is_valid(result.winid)
-			or not vim.api.nvim_win_is_valid(input.winid)
-		then
-			return
-		end
-		vim.wo[result.winid].winfixheight = false
-		vim.api.nvim_win_set_height(input.winid, require("avante.config").windows.input.height)
-		vim.wo[result.winid].winfixheight = true
+		vim.api.nvim_create_autocmd({ "BufEnter", "BufLeave", "TextChanged", "TextChangedI", "TextChangedP" }, {
+			group = group,
+			buffer = ev.buf,
+			callback = fit_later,
+		})
+		fit_later()
 	end,
 })

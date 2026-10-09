@@ -18,6 +18,22 @@ local plugins = {
 	"MunifTanjim/nui.nvim", --> A UI library many are dependent on
 	"rcarriga/nvim-notify", --> Pretty notifications
 	{
+		"folke/snacks.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {
+			-- Kitty graphics protocol: kitty, Ghostty and Rootshell (iPad). Inside tmux,
+			-- needs allow-passthrough; other terminals are detected and skipped
+			image = { enabled = true },
+		},
+		config = function(_, opts)
+			require("snacks").setup(opts)
+			-- snacks defers image setup to the first BufReadPre, which octo:// buffers
+			-- never fire; without this, a PR opened before any real file gets no images
+			Snacks.image.setup()
+		end,
+	},
+	{
 		"folke/noice.nvim", --> Replaces UI for messages, cmdline, and popupmenu
 		event = "VeryLazy",
 		dependencies = {
@@ -306,7 +322,9 @@ local plugins = {
 		},
 	},
 	{
-		"avante-corp/avante.nvim",
+		-- Fork until the empty-history picker fix is merged upstream
+		"yashanand1910/avante.nvim",
+		branch = "fix/skip-empty-history",
 		build = "make",
 		event = "VeryLazy",
 		dependencies = {
