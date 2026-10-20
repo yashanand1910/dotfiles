@@ -16,15 +16,18 @@ on | true)
   echo "Enabling game mode..."
   # sudo -i tlp_gov_ac performance
   sudo -i gov performance
+  # aggregate file keeps alienware-wmi and dell-pc in agreement
+  echo balanced | sudo tee /sys/firmware/acpi/platform_profile >/dev/null
   # hyprmod SUPER
-  echo "Game mode enabled: performance governor, SUPER mod key"
+  echo "Game mode enabled: performance governor + balanced profile, SUPER mod key"
   ;;
 off | false)
   echo "Disabling game mode..."
   # sudo -i tlp_gov_ac schedutil
   sudo -i gov powersave
+  echo balanced | sudo tee /sys/firmware/acpi/platform_profile >/dev/null
   # hyprmod ALT
-  echo "Game mode disabled: schedutil governor, ALT mod key"
+  echo "Game mode disabled: powersave governor + balanced profile, ALT mod key"
   ;;
 *)
   echo "Invalid argument: $1"

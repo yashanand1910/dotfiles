@@ -245,7 +245,15 @@ local plugins = {
 		"lewis6991/gitsigns.nvim", --> Git information
 		config = true,
 	},
-	"sindrets/diffview.nvim",
+	{
+		"dlyongemallo/diffview-plus.nvim", --> Maintained diffview fork with a unified layout
+		opts = {
+			view = {
+				default = { layout = "diff1_inline" },
+				file_history = { layout = "diff1_inline" },
+			},
+		},
+	},
 	"tpope/vim-fugitive",
 	"tpope/vim-rhubarb", --> Enables :Gbrowse
 	{
@@ -337,9 +345,7 @@ local plugins = {
 		},
 	},
 	{
-		-- Fork until the empty-history picker fix is merged upstream
-		"yashanand1910/avante.nvim",
-		branch = "fix/skip-empty-history",
+		"avante-corp/avante.nvim",
 		build = "make",
 		event = "VeryLazy",
 		dependencies = {

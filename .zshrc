@@ -112,6 +112,13 @@ source "$ZSH"/oh-my-zsh.sh
 zstyle ':vcs_info:*:*' nvcsformats "" "%~"
 PROMPT="%(0?.%{$PROMPT_SUCCESS_COLOR%}.%{$PROMPT_FAILURE_COLOR%})${SSH_TTY:+[%n@%m]}%{$FX[bold]%}%(!.$PROMPT_ROOT_END.$PROMPT_DEFAULT_END)%{$FX[no-bold]%}%{$FX[reset]%} "
 
+# scripts/presentation_mode touches this flag; hide the right prompt while set
+__rprompt_default=$RPROMPT
+__presentation_precmd() {
+    [[ -e /tmp/presentation_mode ]] && RPROMPT= || RPROMPT=$__rprompt_default
+}
+add-zsh-hook precmd __presentation_precmd
+
 # Snappier Esc in vi-mode (default 40 = 400ms). Not lower than 15: multi-key
 # sequences like the vi-mode 'vv' need the window to register.
 KEYTIMEOUT=15

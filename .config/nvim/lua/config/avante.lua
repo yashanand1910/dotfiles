@@ -27,19 +27,19 @@ avante.setup({
 		auto_set_highlight_group = true,
 		auto_set_keymaps = true,
 		auto_apply_diff_after_generation = true,
-		jump_result_buffer_on_finish = true,
+		jump_result_buffer_on_finish = false,
 		support_paste_from_clipboard = false,
 		minimize_diff = true,
 		enable_token_counting = true,
 		use_cwd_as_project_root = false,
-		auto_focus_on_diff_view = true,
+		auto_focus_on_diff_view = false,
 		---@type boolean | string[] -- true: auto-approve all tools, false: normal prompts, string[]: auto-approve specific tools by name
 		auto_approve_tool_permissions = true, -- Default: auto-approve all tools (no prompts)
 		auto_check_diagnostics = true,
 		allow_access_to_git_ignored_files = false,
 		enable_fastapply = true, -- requires Morph + MORPH_API_KEY
 		include_generated_by_commit_line = false,
-		auto_add_current_file = true,
+		auto_add_current_file = false,
 		confirmation_ui_style = "inline_buttons",
 		acp_follow_agent_locations = true,
 	},

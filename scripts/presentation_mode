@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Presentation mode - black wallpaper + bigger kitty font
+# Usage: presentation_mode [on|off|true|false]
+
+if [ $# -eq 0 ]; then
+  echo "Usage: presentation_mode [on|off|true|false]"
+  exit 1
+fi
+
+arg=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+
+# kitty listens on unix:@kitty-{kitty_pid} (see kitty.conf)
+kitty_font() {
+  for pid in $(pgrep -x kitty); do
+    kitty @ --to "unix:@kitty-$pid" set-font-size --all "$1" 2>/dev/null
+  done
+}
+
+case "$arg" in
+on | true)
+  pkill -x hyprpaper
+  kitty_font 16
+  touch /tmp/presentation_mode # .zshrc hides RPROMPT while this exists
+  echo "Presentation mode enabled: wallpaper off, kitty font 16, no right prompt"
+  ;;
+off | false)
+  pgrep -x hyprpaper >/dev/null || setsid -f hyprpaper >/dev/null 2>&1
+  kitty_font 0 # 0 resets to font_size from kitty.conf
+  rm -f /tmp/presentation_mode
+  echo "Presentation mode disabled: wallpaper restored, kitty font reset, right prompt back"
+  ;;
+*)
+  echo "Invalid argument: $1"
+  echo "Usage: presentation_mode [on|off|true|false]"
+  exit 1
+  ;;
+esac

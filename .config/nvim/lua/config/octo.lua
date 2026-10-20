@@ -31,7 +31,7 @@ require("octo").setup({
 		review_diff = {
 			copy_sha = { lhs = "<leader>oU", desc = "copy commit SHA to system clipboard" },
 			copy_url = { lhs = "<leader>ou", desc = "copy url to system clipboard" },
-			close_review_tab = { lhs = "<leader>q", desc = "Close review tab" },
+			close_review_tab = { lhs = "<leader>orq", desc = "Close review tab" },
 			submit_review = { lhs = "<leader>ors", desc = "submit review" },
 			discard_review = { lhs = "<leader>ord", desc = "discard review" },
 			add_comment = { lhs = "<leader>ca", desc = "add comment" },

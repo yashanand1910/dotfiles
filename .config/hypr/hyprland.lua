@@ -245,6 +245,7 @@ hl.config({
 		force_default_wallpaper = 0, -- Set to 0 or 1 to disable the anime mascot wallpapers
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
+		background_color = "rgb(000000)", -- shown when hyprpaper is killed (presentation_mode)
 		focus_on_activate = true,
 		-- mouse_move_enables_dpms = true, -- prevents accidental wake up
 		key_press_enables_dpms = true,
@@ -311,12 +312,13 @@ hl.window_rule({
 	suppress_event = "maximize", -- You'll probably like this.
 })
 
--- NOTE: Steam (normal and Big Picture) always opens on workspace 7 (DP-2)
+-- NOTE: All Steam client windows (main, Big Picture, friends, chats, dialogs)
+-- open on workspace 1; games go to workspace 7 (rules below)
 hl.window_rule({
-	name = "steam-ws7",
+	name = "steam-ws1",
 	match = { class = "^(steam)$" },
 
-	workspace = "7",
+	workspace = "1",
 })
 hl.window_rule({
 	name = "steam-bpm-fullscreen",
@@ -375,9 +377,11 @@ hl.bind(mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("makoctl invoke delete-moz &&
 -- key_press_enables_dpms below wakes the screens on any key event: blanking
 -- while the chord is still held meant letting go turned them straight back on.
 -- (`hyprctl dispatch` takes Lua now, so the old "dpms off" string no longer parses)
+-- hl.dsp.dpms only reads a table: dpms("off") is silently a *toggle*, so a
+-- later hypridle timeout would flip the screens back on. Keep { action = "off" }.
 hl.bind(
 	mainMod .. " + SHIFT + S",
-	hl.dsp.exec_cmd([[sleep 1 && hyprctl dispatch 'hl.dsp.dpms("off")']]),
+	hl.dsp.exec_cmd([[sleep 1 && hyprctl dispatch 'hl.dsp.dpms({ action = "off" })']]),
 	{ release = true }
 )
 
