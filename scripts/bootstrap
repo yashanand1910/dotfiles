@@ -1,0 +1,91 @@
+#!/bin/bash
+# Set up an Ubuntu host to match the dev image (see Dockerfile), with keys and
+# credentials copied out of the private image. Undo with scripts/nuke.
+#
+# Usage: bash <(curl -fsSL https://raw.githubusercontent.com/yashanand1910/dotfiles/stable/scripts/bootstrap)
+
+set -euo pipefail
+
+REPO=yashanand1910/dotfiles
+IMAGE=${IMAGE:-yashanand1910/dev-private:latest}
+IMAGE_HOME=${IMAGE_HOME:-/home/yashanand}
+export DOTFILES=${DOTFILES:-$HOME/code/dotfiles}
+STATE=~/.local/state/dotfiles
+
+. /etc/os-release
+if [ "$ID" != ubuntu ]; then
+    echo "Unsupported OS: $ID (only ubuntu for now)" >&2
+    exit 1
+fi
+if [ "$(id -u)" -eq 0 ]; then
+    echo "Run as your own user (sudo is used where needed)" >&2
+    exit 1
+fi
+
+sudo apt-get update
+sudo apt-get install -y git curl
+[ -d "$DOTFILES/.git" ] || git clone "https://github.com/$REPO.git" "$DOTFILES"
+INSTALL="$DOTFILES/scripts/install.sh"
+
+# Leave a pre-existing docker / nvidia toolkit alone, and remember that for nuke
+mkdir -p "$STATE"
+steps=(packages nvim node go tools gh k8s)
+if command -v docker >/dev/null; then
+    touch "$STATE/had-docker"
+elif [ ! -e "$STATE/had-docker" ]; then
+    steps+=(docker-engine)
+fi
+if command -v nvidia-smi >/dev/null; then
+    if command -v nvidia-ctk >/dev/null; then
+        touch "$STATE/had-nvidia"
+    elif [ ! -e "$STATE/had-nvidia" ]; then
+        steps+=(nvidia)
+    fi
+fi
+sudo "$INSTALL" "${steps[@]}"
+sudo systemctl restart docker
+sudo usermod -aG docker "$USER"
+
+"$INSTALL" zsh tmux rust claude
+
+# Copy keys and credentials out of the private image
+sudo docker pull "$IMAGE" || { sudo docker login -u yashanand1910 && sudo docker pull "$IMAGE"; }
+tmp=$(mktemp -d)
+cid=$(sudo docker create "$IMAGE")
+trap 'sudo docker rm -f "$cid" >/dev/null; rm -rf "$tmp"' EXIT
+for p in .ssh .gnupg/public.key .gnupg/private.key .oh-my-zsh/custom/env.zsh .config/gh .docker/config.json; do
+    mkdir -p "$tmp/$(dirname "$p")"
+    sudo docker cp "$cid:$IMAGE_HOME/$p" "$tmp/$p"
+done
+# Claude Code memory and history (absent from images built before they were added)
+for p in .claude/projects .claude/history.jsonl; do
+    mkdir -p "$tmp/.claude"
+    sudo docker cp "$cid:$IMAGE_HOME/$p" "$tmp/$p" || true
+done
+sudo chown -R "$USER:" "$tmp"
+
+# Keep this host's authorized_keys, or we could lock ourselves out
+mkdir -p ~/.ssh
+find "$tmp/.ssh" -mindepth 1 -maxdepth 1 ! -name authorized_keys -exec cp -r {} ~/.ssh/ \;
+chmod -R go-rwx ~/.ssh
+ssh-keygen -F github.com >/dev/null || ssh-keyscan github.com >>~/.ssh/known_hosts 2>/dev/null
+
+gpg --batch --import "$tmp/.gnupg/public.key"
+gpg --batch --import "$tmp/.gnupg/private.key"
+printf "5\ny\n" | gpg --batch --yes --command-fd 0 --edit-key "$(gpg --list-secret-keys --keyid-format LONG | grep sec | awk '{print $2}' | cut -d'/' -f2)" trust quit
+
+cp "$tmp/.oh-my-zsh/custom/env.zsh" ~/.oh-my-zsh/custom/env.zsh
+mkdir -p ~/.config ~/.docker
+cp -rT "$tmp/.config/gh" ~/.config/gh
+cp "$tmp/.docker/config.json" ~/.docker/config.json
+
+# Merge into whatever Claude data this host already has, keeping its own copies
+mkdir -p ~/.claude
+[ ! -d "$tmp/.claude/projects" ] || cp -r --update=none "$tmp/.claude/projects" ~/.claude/
+[ ! -f "$tmp/.claude/history.jsonl" ] || [ -e ~/.claude/history.jsonl ] || cp "$tmp/.claude/history.jsonl" ~/.claude/
+
+"$INSTALL" link
+git -C "$DOTFILES" remote set-url origin "git@github.com:$REPO.git"
+sudo chsh -s "$(command -v zsh)" "$USER"
+
+echo "Done. Log out and back in (for zsh and the docker group), then start nvim once to install plugins."

@@ -1,0 +1,81 @@
+#!/bin/bash
+# Remove everything scripts/bootstrap put on this host: keys, credentials,
+# dotfiles, toolchains, third-party apt packages/repos and the dev images.
+# ~/.ssh/authorized_keys and generic apt packages (git, curl, zsh, ...) are kept.
+#
+# Usage: nuke [--yes]
+
+set -uo pipefail
+
+DOTFILES=${DOTFILES:-$HOME/code/dotfiles}
+STATE=~/.local/state/dotfiles
+
+if [ -n "$(git -C "$DOTFILES" status --porcelain 2>/dev/null)" ] ||
+    [ -n "$(git -C "$DOTFILES" log --oneline '@{u}..' 2>/dev/null)" ]; then
+    echo "WARNING: $DOTFILES has uncommitted or unpushed changes"
+fi
+if [ "${1:-}" != --yes ]; then
+    read -rp "Delete keys, credentials, dotfiles and dev tooling from $(hostname)? Type 'nuke': " ans </dev/tty
+    [ "$ans" = nuke ] || exit 1
+fi
+
+set -x
+
+# Dev images and docker credentials
+if command -v docker >/dev/null; then
+    for img in yashanand1910/dev-private yashanand1910/dev; do
+        sudo docker ps -aq --filter "ancestor=$img" | xargs -r sudo docker rm -f
+        sudo docker images -q "$img" | xargs -r sudo docker rmi -f
+    done
+    sudo docker logout
+fi
+sudo rm -rf /root/.docker
+
+# Keys and credentials
+gpgconf --kill all
+find ~/.ssh -mindepth 1 -maxdepth 1 ! -name authorized_keys -exec rm -rf {} +
+rm -rf ~/.gnupg ~/.config/gh ~/.docker ~/.claude ~/.claude.json* ~/.zsh_history ~/.bash_history
+
+# Dotfile symlinks, restoring whatever install.sh moved aside
+for l in ~/.* ~/.config/* ~/.oh-my-zsh/custom/*; do
+    if [ -L "$l" ] && [[ $(readlink "$l") == "$DOTFILES"/* ]]; then
+        rm "$l"
+        [ -e "$l.bak" ] && mv "$l.bak" "$l"
+    fi
+done
+
+# User-level tooling and caches
+rm -rf "$DOTFILES" ~/.oh-my-zsh ~/.zcompdump* ~/.fzf ~/.fzf.zsh ~/.fzf.bash ~/.tmux \
+    ~/.cargo ~/.rustup ~/.local/bin/claude ~/.local/share/claude ~/.cache/claude \
+    ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim ~/.npm ~/go ~/.cache/go-build
+sudo chsh -s /bin/bash "$USER"
+
+# System tooling
+sudo rm -rf /opt/nvim-linux-* /usr/local/go /usr/local/lib/dotfiles
+sudo rm -f /usr/local/bin/{nvim,go,fd,lazydocker,tree-sitter,kubectl,helm}
+pkgs=(gh nodejs k9s)
+lists=(github-cli nodesource)
+keys=(/etc/apt/keyrings/githubcli-archive-keyring.gpg /etc/apt/keyrings/nodesource.gpg /usr/share/keyrings/nodesource.gpg)
+if [ ! -e "$STATE/had-docker" ]; then
+    pkgs+=(docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin)
+    lists+=(docker)
+    keys+=(/etc/apt/keyrings/docker.asc)
+    sudo gpasswd -d "$USER" docker
+fi
+if [ ! -e "$STATE/had-nvidia" ]; then
+    pkgs+=('nvidia-container-toolkit*' 'libnvidia-container*')
+    lists+=(nvidia-container-toolkit)
+    keys+=(/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg)
+fi
+# apt-get purge fails on names that match nothing, so only pass installed ones
+dpkg-query -W -f='${Package} ${Status}\n' "${pkgs[@]}" 2>/dev/null |
+    awk '/ installed$/ {print $1}' | xargs -r sudo apt-get purge -y
+sudo apt-get autoremove -y
+for l in "${lists[@]}"; do
+    sudo rm -f "/etc/apt/sources.list.d/$l.list" "/etc/apt/sources.list.d/$l.sources"
+done
+sudo rm -f "${keys[@]}"
+sudo apt-get update
+rm -rf "$STATE"
+
+echo "Nuked. Log out to drop the current shell environment."

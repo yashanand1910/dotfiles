@@ -24,4 +24,4 @@ if [ -S /var/run/docker.sock ]; then
     fi
 fi
 
-exec /bin/zsh $@
+exec /bin/zsh "$@"

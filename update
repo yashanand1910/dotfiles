@@ -5,24 +5,25 @@ git add .
 git commit -m "Update config on $(date)"
 git push || true
 
-set eux
+set -eux
 
 # PLATFORMS="linux/amd64,linux/arm64"
 PLATFORMS="linux/amd64"
 
 docker buildx build --platform $PLATFORMS -t yashanand1910/dev --load .
+# private.Dockerfile builds FROM the pushed public image
+docker push yashanand1910/dev:latest
 
 DOCKERFILE_DIR=$PWD
 (
   cd "$HOME" || exit # since we are accessing some files from $HOME during build
   docker buildx build \
     --platform $PLATFORMS \
-    --build-arg GITHUB_KEY="$GITHUB_KEY" \
-    --build-arg DOCKERHUB_KEY="$DOCKERHUB_KEY" \
+    --secret id=github_key,env=GITHUB_KEY \
+    --secret id=dockerhub_key,env=DOCKERHUB_KEY \
     -t yashanand1910/dev-private -f "$DOCKERFILE_DIR"/private.Dockerfile --load .
 )
 
-docker push yashanand1910/dev:latest
 docker push yashanand1910/dev-private:latest
 
 # docker system prune -f --volumes
