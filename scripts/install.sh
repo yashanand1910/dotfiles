@@ -169,6 +169,7 @@ step_link() {
     for f in .gitconfig .gitignore .vimrc .zshrc .tmux.conf; do
         link "$DOTFILES/$f" ~/"$f"
     done
+    link "$DOTFILES/scripts" ~/code/scripts
     for f in "$DOTFILES"/.oh-my-zsh/*; do
         link "$f" ~/.oh-my-zsh/custom/"$(basename "$f")"
     done
