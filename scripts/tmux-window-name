@@ -1,0 +1,10 @@
+#!/bin/sh
+# Window name for automatic-rename-format in tmux.conf: running command, else
+# (at a shell prompt) git repo, else directory.
+# Usage: tmux-window-name <pane_current_path> <pane_current_command>
+case $2 in
+zsh | bash | sh) ;;
+*) exec echo "$2" ;;
+esac
+repo=$(git -C "$1" rev-parse --show-toplevel 2>/dev/null) && exec basename "$repo"
+basename "$1"
