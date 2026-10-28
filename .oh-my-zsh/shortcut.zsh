@@ -41,8 +41,6 @@ alias less="less -i --use-color"
 # kernel
 alias kconfig='cat /proc/config.gz | gunzip | less'
 
-# lazydocker
-alias lazydocker="TERM=xterm lazydocker"
 
 # kubernetes
 alias kc="kubectl"

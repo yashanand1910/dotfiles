@@ -11,6 +11,14 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # driving the terminal — see scripts/open-url
 export BROWSER=open-url
 
+# Clients like Ghostty/kitty may send a TERM (xterm-ghostty, xterm-kitty) this
+# host has no terminfo for, which breaks tmux, less, htop, ... — fall back
+if [[ -n $TERM ]] && ! infocmp "$TERM" &>/dev/null; then
+	export TERM=xterm-256color
+fi
+# Rootshell supports truecolor but can't pass COLORTERM (sshd only accepts LC_*)
+[[ $LC_TERMINAL == rootshell && -z $COLORTERM ]] && export COLORTERM=truecolor
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
