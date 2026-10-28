@@ -163,6 +163,22 @@ export GPG_TTY=$(tty)
 #     tmux new-session -A
 # fi
 
+# Publish this pane's git repo as @repo for automatic-rename-format in tmux.conf
+# (a pane option, so tmux can read it synchronously without #() jobs)
+if [[ -n $TMUX_PANE ]]; then
+    autoload -Uz add-zsh-hook
+    __tmux_repo_chpwd() {
+        local top=$(git rev-parse --show-toplevel 2>/dev/null)
+        if [[ -n $top ]]; then
+            tmux set -p -t "$TMUX_PANE" @repo "${top:t}"
+        else
+            tmux set -pu -t "$TMUX_PANE" @repo
+        fi
+    }
+    add-zsh-hook chpwd __tmux_repo_chpwd
+    __tmux_repo_chpwd
+fi
+
 # Notify when a command running >=15s finishes while I'm not looking at it.
 # NOTE: kitty's notify_on_cmd_finish relies on OSC 133 prompt marks which tmux
 # does not forward to the outer terminal, so it never fires inside tmux — hence
