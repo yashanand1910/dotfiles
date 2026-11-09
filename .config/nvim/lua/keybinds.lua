@@ -706,12 +706,12 @@ local key_opt = {
 
 	-- Avante --
 	{ "n", "<leader>aa", ":AvanteAsk<CR>", "Avante ask" },
-	{ "n", "<leader>as", ":AvanteToggle<CR>", "Avante toggle" },
+	{ "n", "<leader>as", ":Avante toggle<CR>", "Avante toggle" },
 	{ "n", "<leader>ax", ":AvanteStop<CR>", "Avante stop" },
 	{ "n", "<leader>ac", ":AvanteClear<CR>", "Avante clear" },
 	{ "n", "<leader>an", ":AvanteChatNew<CR>", "Avante new" },
 	{ "n", "<leader>am", ":AvanteModels<CR>", "Avante models" },
-	{ "n", "<leader>al", ":AvanteHistory<CR>", "Avante history" },
+	{ "n", "<leader>al", ":Avante resume<CR>", "Avante history" },
 	{
 		"v",
 		"<leader>aa",

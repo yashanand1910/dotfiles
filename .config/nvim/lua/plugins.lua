@@ -345,7 +345,10 @@ local plugins = {
 		},
 	},
 	{
-		"avante-corp/avante.nvim",
+		-- Fork carrying avante-corp/avante.nvim#3388 (sidebars on the same project
+		-- hijacking each other's chat); switch back once it is merged
+		"yashanand1910/avante.nvim",
+		branch = "fix/sidebar-keep-own-chat",
 		build = "make",
 		event = "VeryLazy",
 		dependencies = {
