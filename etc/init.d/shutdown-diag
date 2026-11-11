@@ -1,0 +1,36 @@
+#!/sbin/openrc-run
+
+# Install: /etc/init.d/shutdown-diag, then `rc-update add shutdown-diag shutdown`.
+# Runs after killprocs, right before mount-ro remounts / read-only. rc_logger
+# and syslog are already gone by then, so a failed remount ("failed because we
+# are using /" -- fuser always lists the rc shell itself) leaves no trace.
+# Record what could still pin / so the next unclean shutdown is diagnosable:
+# a read-only remount fails with EBUSY on any file open for writing or any
+# deleted-but-still-open file on the root filesystem.
+
+description="Log processes and open files that survive killprocs"
+LOG=/var/log/shutdown-diag.log
+
+depend()
+{
+	after killprocs savecache
+	before mount-ro
+}
+
+start()
+{
+	ebegin "Logging survivors before read-only remount"
+	{
+		echo "=== $(date) ==="
+		echo "--- processes (non-kernel) ---"
+		ps -N --ppid 2 -p 2 -o pid,ppid,sid,stat,etime,args
+		echo "--- deleted-but-open files ---"
+		lsof -w +L1 2>/dev/null
+		echo "--- files open for writing on / ---"
+		lsof -w / 2>/dev/null | awk 'NR==1 || $4 ~ /[0-9]+[wu]/'
+		echo "--- mounts ---"
+		cat /proc/self/mountinfo
+	} > "$LOG" 2>&1
+	sync
+	eend 0
+}
